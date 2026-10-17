@@ -1,0 +1,552 @@
+[
+  {
+    "id": 1,
+    "section": "Manufacturing Fundamentals",
+    "question": "What is the main purpose of manufacturing?",
+    "options": {
+      "A": "To convert raw materials into useful products",
+      "B": "To store raw materials only",
+      "C": "To transport finished goods only"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "id": 2,
+    "section": "Manufacturing Fundamentals",
+    "question": "Which of the following is a subtractive manufacturing process?",
+    "options": {
+      "A": "Injection moulding",
+      "B": "Machining",
+      "C": "3D printing"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "id": 3,
+    "section": "Manufacturing Fundamentals",
+    "question": "What does CNC stand for?",
+    "options": {
+      "A": "Computer Numerical Control",
+      "B": "Central Network Communication",
+      "C": "Controlled Number Calculation"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "id": 4,
+    "section": "Manufacturing Fundamentals",
+    "question": "Which machine is commonly used to produce cylindrical components by rotating the workpiece?",
+    "options": {
+      "A": "Milling machine",
+      "B": "Drilling machine",
+      "C": "Lathe machine"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "id": 5,
+    "section": "Manufacturing Fundamentals",
+    "question": "Which process is commonly used to produce flat surfaces and slots?",
+    "options": {
+      "A": "Milling",
+      "B": "Casting",
+      "C": "Forging"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "id": 6,
+    "section": "Manufacturing Fundamentals",
+    "question": "What is the primary purpose of a drilling machine?",
+    "options": {
+      "A": "Measure surface roughness",
+      "B": "Produce holes",
+      "C": "Heat-treat components"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "id": 7,
+    "section": "Manufacturing Fundamentals",
+    "question": "Which process involves pouring molten metal into a mould?",
+    "options": {
+      "A": "Grinding",
+      "B": "Turning",
+      "C": "Casting"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "id": 8,
+    "section": "Manufacturing Fundamentals",
+    "question": "What is forging?",
+    "options": {
+      "A": "Shaping material using compressive force",
+      "B": "Removing material using an abrasive wheel only",
+      "C": "Joining parts using adhesive only"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "id": 9,
+    "section": "Manufacturing Fundamentals",
+    "question": "Which process is primarily used to join two metal components permanently?",
+    "options": {
+      "A": "Turning",
+      "B": "Welding",
+      "C": "Reaming"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "id": 10,
+    "section": "Manufacturing Fundamentals",
+    "question": "What is the purpose of grinding?",
+    "options": {
+      "A": "Improve surface finish and dimensional accuracy",
+      "B": "Increase component weight",
+      "C": "Create raw material from ore"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "id": 11,
+    "section": "Engineering Materials and Tools",
+    "question": "Which of the following is a ferrous metal?",
+    "options": {
+      "A": "Aluminium",
+      "B": "Cast iron",
+      "C": "Copper"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "id": 12,
+    "section": "Engineering Materials and Tools",
+    "question": "Which metal is known for low density and good corrosion resistance?",
+    "options": {
+      "A": "Aluminium",
+      "B": "Lead",
+      "C": "Cast iron"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "id": 13,
+    "section": "Engineering Materials and Tools",
+    "question": "What is the purpose of heat treatment?",
+    "options": {
+      "A": "Change material properties",
+      "B": "Change a component's colour only",
+      "C": "Increase size permanently"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "id": 14,
+    "section": "Engineering Materials and Tools",
+    "question": "Which material is used for cutting tools due to its high hardness?",
+    "options": {
+      "A": "Rubber",
+      "B": "Mild steel",
+      "C": "Carbide"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "id": 15,
+    "section": "Engineering Materials and Tools",
+    "question": "What is the primary function of a cutting tool in machining?",
+    "options": {
+      "A": "Remove material from the workpiece",
+      "B": "Measure temperature",
+      "C": "Hold the machine foundation"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "id": 16,
+    "section": "Engineering Materials and Tools",
+    "question": "Which tool is used to measure external diameter accurately?",
+    "options": {
+      "A": "Hammer",
+      "B": "Micrometer",
+      "C": "Spanner"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "id": 17,
+    "section": "Engineering Materials and Tools",
+    "question": "What is the purpose of a chuck on a lathe?",
+    "options": {
+      "A": "Cool the cutting tool",
+      "B": "Measure the workpiece",
+      "C": "Hold the workpiece"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "id": 18,
+    "section": "Engineering Materials and Tools",
+    "question": "Which tool is used to measure an angle?",
+    "options": {
+      "A": "Bevel protractor",
+      "B": "Feeler gauge",
+      "C": "Vernier caliper"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "id": 19,
+    "section": "Engineering Materials and Tools",
+    "question": "What is the function of a reamer?",
+    "options": {
+      "A": "Cut external threads",
+      "B": "Finish and size an existing hole accurately",
+      "C": "Weld two components"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "id": 20,
+    "section": "Engineering Materials and Tools",
+    "question": "Which tool is commonly used to cut internal or external threads?",
+    "options": {
+      "A": "Drill bit",
+      "B": "Grinding wheel",
+      "C": "Tap or die"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "id": 21,
+    "section": "Quality Control and Measurement",
+    "question": "What does QC stand for?",
+    "options": {
+      "A": "Quantity Calculation",
+      "B": "Quality Control",
+      "C": "Quick Cutting"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "id": 22,
+    "section": "Quality Control and Measurement",
+    "question": "What is tolerance in engineering?",
+    "options": {
+      "A": "Permissible variation in a specified dimension",
+      "B": "Weight of a machine",
+      "C": "Speed of a conveyor"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "id": 23,
+    "section": "Quality Control and Measurement",
+    "question": "Which instrument can be used to measure outside diameter and length?",
+    "options": {
+      "A": "Thermometer",
+      "B": "Tachometer",
+      "C": "Vernier caliper"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "id": 24,
+    "section": "Quality Control and Measurement",
+    "question": "What does Ra indicate?",
+    "options": {
+      "A": "Material hardness",
+      "B": "Surface texture or roughness",
+      "C": "Component weight"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "id": 25,
+    "section": "Quality Control and Measurement",
+    "question": "What is the purpose of a go/no-go gauge?",
+    "options": {
+      "A": "Check whether a feature meets specified dimensional limits",
+      "B": "Measure electrical power",
+      "C": "Polish a surface"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "id": 26,
+    "section": "Quality Control and Measurement",
+    "question": "What is calibration?",
+    "options": {
+      "A": "Replacing all machine parts",
+      "B": "Increasing production speed",
+      "C": "Comparing a measuring instrument against a suitable reference standard"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "id": 27,
+    "section": "Quality Control and Measurement",
+    "question": "What is a defect in a manufactured component?",
+    "options": {
+      "A": "A component that is always oversized",
+      "B": "A component with a nonconformity or flaw",
+      "C": "A component that has been packed"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "id": 28,
+    "section": "Quality Control and Measurement",
+    "question": "What is the purpose of inspection during production?",
+    "options": {
+      "A": "Identify deviations and verify requirements",
+      "B": "Increase raw material consumption",
+      "C": "Avoid using drawings"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "id": 29,
+    "section": "Quality Control and Measurement",
+    "question": "ISO 9001 primarily relates to what?",
+    "options": {
+      "A": "Welding machine design",
+      "B": "Automotive fuel economy",
+      "C": "Quality management systems"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "id": 30,
+    "section": "Quality Control and Measurement",
+    "question": "What is first-piece inspection?",
+    "options": {
+      "A": "Inspection of the first component produced in a setup or run",
+      "B": "Inspection only after shipment",
+      "C": "Inspection of raw material weight only"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "id": 31,
+    "section": "Industrial Safety and Maintenance",
+    "question": "What should an operator wear when required by machine safety rules?",
+    "options": {
+      "A": "Loose clothing",
+      "B": "Appropriate personal protective equipment (PPE)",
+      "C": "Open footwear"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "id": 32,
+    "section": "Industrial Safety and Maintenance",
+    "question": "What should be done before maintenance?",
+    "options": {
+      "A": "Increase machine speed",
+      "B": "Remove safety guards and start the machine",
+      "C": "Isolate hazardous energy and follow lockout/tagout"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "id": 33,
+    "section": "Industrial Safety and Maintenance",
+    "question": "What is the purpose of a machine guard?",
+    "options": {
+      "A": "Protect operators from moving or hazardous parts",
+      "B": "Improve appearance",
+      "C": "Increase cutting speed"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "id": 34,
+    "section": "Industrial Safety and Maintenance",
+    "question": "What should be done if an unsafe condition is noticed on the shop floor?",
+    "options": {
+      "A": "Ignore it if production is running",
+      "B": "Report it promptly and follow site safety procedures",
+      "C": "Wait until the end of the month"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "id": 35,
+    "section": "Industrial Safety and Maintenance",
+    "question": "Which extinguisher is suitable for energized electrical equipment, subject to site procedures?",
+    "options": {
+      "A": "Water jet",
+      "B": "Paper-based extinguisher",
+      "C": "CO₂ extinguisher"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "id": 36,
+    "section": "Industrial Safety and Maintenance",
+    "question": "Why is housekeeping important in an industrial workplace?",
+    "options": {
+      "A": "Reduce slips, trips, contamination and other hazards",
+      "B": "Increase vibration",
+      "C": "Eliminate inspections"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "id": 37,
+    "section": "Industrial Safety and Maintenance",
+    "question": "What is preventive maintenance?",
+    "options": {
+      "A": "Repair only after a major failure",
+      "B": "Planned maintenance intended to reduce breakdowns",
+      "C": "Replace every machine annually"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "id": 38,
+    "section": "Industrial Safety and Maintenance",
+    "question": "What is the purpose of lubrication?",
+    "options": {
+      "A": "Increase friction",
+      "B": "Make components heavier",
+      "C": "Reduce friction and wear"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "id": 39,
+    "section": "Industrial Safety and Maintenance",
+    "question": "What does 5S primarily help improve?",
+    "options": {
+      "A": "Organisation, cleanliness and workplace efficiency",
+      "B": "Raw material prices",
+      "C": "Product dimensions automatically"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "id": 40,
+    "section": "Industrial Safety and Maintenance",
+    "question": "What should be done after an emergency stop is activated?",
+    "options": {
+      "A": "Bypass it immediately",
+      "B": "Follow the site's safe recovery procedure and investigate the cause",
+      "C": "Restart without checking"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "id": 41,
+    "section": "Production, Productivity and Industrial Awareness",
+    "question": "What does productivity generally measure?",
+    "options": {
+      "A": "Output relative to resources used",
+      "B": "Number of employees only",
+      "C": "Factory floor area"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "id": 42,
+    "section": "Production, Productivity and Industrial Awareness",
+    "question": "What is the purpose of a technical engineering drawing?",
+    "options": {
+      "A": "Advertise a product",
+      "B": "Communicate geometry, dimensions and specifications",
+      "C": "Record employee attendance"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "id": 43,
+    "section": "Production, Productivity and Industrial Awareness",
+    "question": "What does BOM stand for in manufacturing?",
+    "options": {
+      "A": "List of customer complaints only",
+      "B": "Machine operating manual",
+      "C": "List of materials, parts and quantities needed for a product"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "id": 44,
+    "section": "Production, Productivity and Industrial Awareness",
+    "question": "What is the purpose of inventory management?",
+    "options": {
+      "A": "Maintain suitable stock levels and control materials",
+      "B": "Eliminate documentation",
+      "C": "Increase material wastage"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "id": 45,
+    "section": "Production, Productivity and Industrial Awareness",
+    "question": "What is lead time?",
+    "options": {
+      "A": "Time to sharpen a tool only",
+      "B": "Time between starting a process/order and completion/delivery, as defined",
+      "C": "Age of a machine"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "id": 46,
+    "section": "Production, Productivity and Industrial Awareness",
+    "question": "What is the goal of lean manufacturing?",
+    "options": {
+      "A": "Increase unnecessary movement",
+      "B": "Keep excess stock",
+      "C": "Reduce waste and improve customer value"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "id": 47,
+    "section": "Production, Productivity and Industrial Awareness",
+    "question": "What is a production schedule used for?",
+    "options": {
+      "A": "Plan what is produced, when, and with which resources",
+      "B": "Plan employee holidays only",
+      "C": "Replace quality inspections"
+    },
+    "correctAnswer": "A"
+  },
+  {
+    "id": 48,
+    "section": "Production, Productivity and Industrial Awareness",
+    "question": "What does traceability mean?",
+    "options": {
+      "A": "Measure machine noise only",
+      "B": "Ability to track product/material history and movement",
+      "C": "Record only the final selling price"
+    },
+    "correctAnswer": "B"
+  },
+  {
+    "id": 49,
+    "section": "Production, Productivity and Industrial Awareness",
+    "question": "What is an SOP?",
+    "options": {
+      "A": "A method that encourages different procedures each time",
+      "B": "A way to eliminate safety rules",
+      "C": "Documented, consistent instructions for carrying out a task"
+    },
+    "correctAnswer": "C"
+  },
+  {
+    "id": 50,
+    "section": "Production, Productivity and Industrial Awareness",
+    "question": "What is continuous improvement?",
+    "options": {
+      "A": "Ongoing changes to improve processes, quality or efficiency",
+      "B": "Never changing an established process",
+      "C": "Increasing production regardless of quality"
+    },
+    "correctAnswer": "A"
+  }
+]
