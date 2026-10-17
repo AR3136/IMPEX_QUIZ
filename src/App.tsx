@@ -40,7 +40,7 @@ export const App: React.FC = () => {
       <Header showBoothInfo={page !== 'quiz'} />
 
       {/* Dynamic Page Switcher */}
-      <main className="flex-1 flex flex-col w-full max-w-md mx-auto z-10 pb-[env(safe-area-inset-bottom,16px)]">
+      <main className={`flex-1 flex flex-col w-full max-w-md mx-auto z-10 ${page === 'quiz' ? '' : 'pb-[max(1rem,env(safe-area-inset-bottom,16px))]'}`}>
         {page === 'register' && <RegistrationPage />}
         {page === 'quiz' && <QuizPage />}
         {page === 'result' && <ThankYouPage />}

@@ -56,42 +56,42 @@ export const ThankYouPage: React.FC = () => {
   };
 
   return (
-    <div className="w-full flex-1 flex flex-col justify-between px-3.5 sm:px-4 py-3 sm:py-4 max-w-md mx-auto space-y-3.5 animate-fadeIn">
+    <div className="w-full flex-1 flex flex-col justify-between px-3.5 sm:px-4 py-3 sm:py-4 max-w-md mx-auto space-y-3 sm:space-y-3.5 animate-fadeIn">
       {/* 1. Compact Header with Three Partner & Exhibition Logos */}
-      <div className="w-full bg-white rounded-xl p-2.5 shadow-card-dark border border-slate-200/90 flex items-center justify-around">
+      <div className="w-full bg-white rounded-xl p-2 sm:p-2.5 shadow-card-dark border border-slate-200/90 flex items-center justify-around">
         <img
           src="/logos/imtex-logo.jpeg"
           alt="IMTEX Exhibition Logo"
-          className="h-7 sm:h-8 w-auto max-w-[85px] object-contain"
+          className="h-6 sm:h-8 w-auto max-w-[70px] sm:max-w-[85px] object-contain"
         />
-        <div className="w-[1px] h-5 bg-slate-200" />
+        <div className="w-[1px] h-4 sm:h-5 bg-slate-200" />
         <img
           src="/logos/cogsdill-logo.jpeg"
           alt="Cogsdill"
-          className="h-4 sm:h-5 w-auto max-w-[65px] object-contain"
+          className="h-3.5 sm:h-5 w-auto max-w-[50px] sm:max-w-[65px] object-contain"
         />
-        <div className="w-[1px] h-5 bg-slate-200" />
+        <div className="w-[1px] h-4 sm:h-5 bg-slate-200" />
         <img
           src="/logos/engenius-logo.jpeg"
           alt="EnGenius Technologies"
-          className="h-4 sm:h-5 w-auto max-w-[65px] object-contain"
+          className="h-3.5 sm:h-5 w-auto max-w-[50px] sm:max-w-[65px] object-contain"
         />
       </div>
 
       {/* 2. Primary Celebration & Main Message */}
-      <div className="text-center space-y-1.5 pt-1">
+      <div className="text-center space-y-1 pt-0.5 sm:pt-1">
         {/* Animated Gift Icon with Pulsing Ambient Halo */}
-        <div className="relative inline-block my-1">
+        <div className="relative inline-block my-0.5 sm:my-1">
           <div className="absolute inset-0 bg-amber-400/25 rounded-full blur-xl animate-pulse pointer-events-none" />
-          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 p-0.5 shadow-glow-amber mx-auto flex items-center justify-center transform hover:scale-105 transition-transform">
+          <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-amber-500 via-amber-400 to-yellow-300 p-0.5 shadow-glow-amber mx-auto flex items-center justify-center transform hover:scale-105 transition-transform">
             <div className="w-full h-full bg-slate-950/70 rounded-2xl flex items-center justify-center backdrop-blur-sm">
-              <Gift className="w-8 h-8 sm:w-10 sm:h-10 text-amber-300 animate-bounce" />
+              <Gift className="w-7 h-7 sm:w-10 sm:h-10 text-amber-300 animate-bounce" />
             </div>
           </div>
         </div>
 
         {/* Required Main Heading */}
-        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
+        <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight leading-tight">
           Thank You for Participating!
         </h1>
 
@@ -101,14 +101,14 @@ export const ThankYouPage: React.FC = () => {
       </div>
 
       {/* 3. Prominent Call To Action Banner: "Collect Your Goodies" */}
-      <div className="glass-panel border-2 border-amber-400/90 rounded-2xl p-4 sm:p-5 text-center shadow-glow-amber relative overflow-hidden bg-gradient-to-b from-amber-950/40 via-slate-900/90 to-imtex-card">
-        <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 text-xs font-black uppercase tracking-wider mb-2">
-          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+      <div className="glass-panel border-2 border-amber-400/90 rounded-2xl p-3.5 sm:p-5 text-center shadow-glow-amber relative overflow-hidden bg-gradient-to-b from-amber-950/40 via-slate-900/90 to-imtex-card">
+        <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-400/20 text-amber-300 text-[10px] sm:text-xs font-black uppercase tracking-wider mb-1.5 sm:mb-2">
+          <Sparkles className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-amber-400" />
           <span>Exhibition Gift Pass</span>
         </div>
 
         {/* Prominent CTA Heading */}
-        <div className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 tracking-wide">
+        <div className="text-lg sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 tracking-wide">
           Collect Your Goodies
         </div>
 
@@ -192,9 +192,9 @@ export const ThankYouPage: React.FC = () => {
       </div>
 
       {/* 6. Exhibition Location Tag */}
-      <div className="text-center text-[10px] text-slate-500 flex items-center justify-center space-x-1.5 pb-2">
+      <div className="text-center text-[10px] text-slate-500 flex items-center justify-center space-x-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))]">
         <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-        <span>Bangalore International Exhibition Centre (BIEC) • Hall 3A • Booth B102</span>
+        <span className="truncate max-w-full">BIEC • Hall 3A • Booth B102</span>
       </div>
     </div>
   );

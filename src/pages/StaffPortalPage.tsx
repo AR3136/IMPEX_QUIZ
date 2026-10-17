@@ -183,14 +183,14 @@ export const StaffPortalPage: React.FC = () => {
                 value={passcode}
                 onChange={e => setPasscode(e.target.value)}
                 disabled={isLoggingIn}
-                className="w-full min-h-[48px] bg-slate-900 border border-slate-700 focus:border-amber-400 rounded-xl px-4 py-2 text-center text-sm text-white tracking-widest outline-none font-mono"
+                className="w-full min-h-[48px] bg-slate-900 border border-slate-700 focus:border-amber-400 rounded-xl px-4 py-2 text-center text-base sm:text-sm text-white tracking-widest outline-none font-mono"
               />
             </div>
 
             <button
               type="submit"
               disabled={isLoggingIn || !passcode.trim()}
-              className="w-full min-h-[48px] py-3 px-4 rounded-xl font-black text-slate-950 bg-gradient-to-r from-amber-400 to-yellow-300 hover:opacity-95 shadow-glow-amber flex items-center justify-center space-x-2 transition-all cursor-pointer disabled:opacity-50"
+              className="w-full min-h-[48px] py-3 px-4 rounded-xl font-black text-slate-950 bg-gradient-to-r from-amber-400 to-yellow-300 hover:opacity-95 shadow-glow-amber flex items-center justify-center space-x-2 transition-all touch-press cursor-pointer disabled:opacity-50"
             >
               {isLoggingIn ? 'Authenticating...' : 'Enter Booth Staff Portal'}
             </button>
@@ -216,7 +216,7 @@ export const StaffPortalPage: React.FC = () => {
 
         <button
           onClick={handleLogout}
-          className="text-xs text-slate-400 hover:text-red-400 flex items-center space-x-1 p-1 rounded cursor-pointer"
+          className="text-xs text-slate-400 hover:text-red-400 flex items-center space-x-1 p-1 rounded cursor-pointer touch-press"
         >
           <LogOut className="w-3.5 h-3.5" />
           <span>Exit Portal</span>
@@ -243,14 +243,14 @@ export const StaffPortalPage: React.FC = () => {
               value={searchId}
               onChange={e => setSearchId(e.target.value.toUpperCase())}
               disabled={isSearching}
-              className="w-full min-h-[46px] bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl pl-9 pr-3 py-2 text-xs font-mono text-white placeholder-slate-500 uppercase outline-none"
+              className="w-full min-h-[48px] bg-slate-900 border border-slate-700 focus:border-cyan-400 rounded-xl pl-9 pr-3 py-2 text-base sm:text-xs font-mono text-white placeholder-slate-500 uppercase outline-none"
             />
           </div>
 
           <button
             type="submit"
             disabled={isSearching || !searchId.trim()}
-            className="min-h-[46px] px-4 rounded-xl bg-cyan-400 text-slate-950 font-black text-xs hover:bg-cyan-300 transition-all cursor-pointer disabled:opacity-50 shrink-0 flex items-center space-x-1.5 shadow-glow-cyan"
+            className="min-h-[48px] px-4 rounded-xl bg-cyan-400 text-slate-950 font-black text-xs hover:bg-cyan-300 transition-all touch-press cursor-pointer disabled:opacity-50 shrink-0 flex items-center space-x-1.5 shadow-glow-cyan"
           >
             {isSearching ? <RefreshCw className="w-4 h-4 animate-spin" /> : <span>Find</span>}
           </button>

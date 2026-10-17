@@ -181,7 +181,7 @@ export const RegistrationPage: React.FC = () => {
               onChange={e => handleChange('name', e.target.value)}
               onBlur={() => handleBlur('name')}
               disabled={isFormBusy}
-              className={`w-full min-h-[48px] bg-slate-900/80 border rounded-xl pl-9 pr-9 py-2.5 text-sm text-white placeholder-slate-500 transition-all outline-none ${
+              className={`w-full min-h-[48px] bg-slate-900/80 border rounded-xl pl-9 pr-9 py-2.5 text-base sm:text-sm text-white placeholder-slate-500 transition-all outline-none ${
                 validationErrors.name
                   ? 'border-red-500 ring-1 ring-red-500/50 bg-red-950/20'
                   : touched.name && formData.name && !validationErrors.name
@@ -223,7 +223,7 @@ export const RegistrationPage: React.FC = () => {
               onChange={e => handleChange('email', e.target.value)}
               onBlur={() => handleBlur('email')}
               disabled={isFormBusy}
-              className={`w-full min-h-[48px] bg-slate-900/80 border rounded-xl pl-9 pr-9 py-2.5 text-sm text-white placeholder-slate-500 transition-all outline-none ${
+              className={`w-full min-h-[48px] bg-slate-900/80 border rounded-xl pl-9 pr-9 py-2.5 text-base sm:text-sm text-white placeholder-slate-500 transition-all outline-none ${
                 validationErrors.email
                   ? 'border-red-500 ring-1 ring-red-500/50 bg-red-950/20'
                   : touched.email && formData.email && !validationErrors.email
@@ -265,7 +265,7 @@ export const RegistrationPage: React.FC = () => {
               onChange={e => handleChange('phone', e.target.value)}
               onBlur={() => handleBlur('phone')}
               disabled={isFormBusy}
-              className={`w-full min-h-[48px] bg-slate-900/80 border rounded-xl pl-9 pr-9 py-2.5 text-sm text-white placeholder-slate-500 transition-all outline-none font-mono ${
+              className={`w-full min-h-[48px] bg-slate-900/80 border rounded-xl pl-9 pr-9 py-2.5 text-base sm:text-sm text-white placeholder-slate-500 transition-all outline-none font-mono ${
                 validationErrors.phone
                   ? 'border-red-500 ring-1 ring-red-500/50 bg-red-950/20'
                   : touched.phone && formData.phone && !validationErrors.phone
@@ -317,7 +317,7 @@ export const RegistrationPage: React.FC = () => {
                       value={formData.company}
                       onChange={e => handleChange('company', e.target.value)}
                       disabled={isFormBusy}
-                      className="w-full min-h-[46px] bg-slate-900/80 border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-cyan-400"
+                      className="w-full min-h-[48px] bg-slate-900/80 border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-base sm:text-xs text-white placeholder-slate-500 outline-none focus:border-cyan-400"
                     />
                   </div>
                 </div>
@@ -335,7 +335,7 @@ export const RegistrationPage: React.FC = () => {
                       value={formData.designation}
                       onChange={e => handleChange('designation', e.target.value)}
                       disabled={isFormBusy}
-                      className="w-full min-h-[46px] bg-slate-900/80 border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-cyan-400"
+                      className="w-full min-h-[48px] bg-slate-900/80 border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-base sm:text-xs text-white placeholder-slate-500 outline-none focus:border-cyan-400"
                     />
                   </div>
                 </div>
@@ -356,7 +356,7 @@ export const RegistrationPage: React.FC = () => {
                       value={formData.city}
                       onChange={e => handleChange('city', e.target.value)}
                       disabled={isFormBusy}
-                      className="w-full min-h-[46px] bg-slate-900/80 border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-cyan-400"
+                      className="w-full min-h-[48px] bg-slate-900/80 border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-base sm:text-xs text-white placeholder-slate-500 outline-none focus:border-cyan-400"
                     />
                   </div>
                 </div>
@@ -370,7 +370,7 @@ export const RegistrationPage: React.FC = () => {
                     value={formData.visitorType}
                     onChange={e => handleChange('visitorType', e.target.value)}
                     disabled={isFormBusy}
-                    className="w-full min-h-[46px] bg-slate-900/80 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-cyan-400 cursor-pointer"
+                    className="w-full min-h-[48px] bg-slate-900/80 border border-slate-700 rounded-xl px-3 py-2 text-base sm:text-xs text-white outline-none focus:border-cyan-400 cursor-pointer"
                   >
                     {VISITOR_TYPES.map(type => (
                       <option key={type} value={type} className="bg-slate-900 text-white">
@@ -400,7 +400,7 @@ export const RegistrationPage: React.FC = () => {
           </div>
 
           {/* Unchecked Mandatory Consent Checkbox */}
-          <label className="flex items-start space-x-3 cursor-pointer select-none group">
+          <label className="flex items-start space-x-3 cursor-pointer select-none group p-1 -m-1 rounded-lg hover:bg-slate-800/40 transition-colors">
             <div className="relative flex items-center pt-0.5">
               <input
                 id="reg-consent"
@@ -409,7 +409,7 @@ export const RegistrationPage: React.FC = () => {
                 onChange={e => handleChange('consent', e.target.checked)}
                 onBlur={() => handleBlur('consent')}
                 disabled={isFormBusy}
-                className="w-4.5 h-4.5 rounded border border-slate-600 bg-slate-950 text-cyan-500 focus:ring-cyan-400 focus:ring-offset-0 focus:ring-1 cursor-pointer accent-cyan-400"
+                className="w-5 h-5 rounded border border-slate-600 bg-slate-950 text-cyan-500 focus:ring-cyan-400 focus:ring-offset-0 focus:ring-1 cursor-pointer accent-cyan-400"
               />
             </div>
             <span className={`text-[11px] leading-tight transition-colors ${
@@ -448,18 +448,18 @@ export const RegistrationPage: React.FC = () => {
       </form>
 
       {/* 4. Quick Highlights Footer */}
-      <div className="mt-3.5 grid grid-cols-3 gap-2 text-center text-[11px] text-slate-400">
-        <div className="bg-slate-900/60 p-2 rounded-xl border border-slate-800/80">
+      <div className="mt-3.5 grid grid-cols-3 gap-1.5 sm:gap-2 text-center text-[10px] sm:text-[11px] text-slate-400">
+        <div className="bg-slate-900/60 p-1.5 sm:p-2 rounded-xl border border-slate-800/80">
           <span className="block font-bold text-cyan-400">⏱️ ~2 Mins</span>
-          <span>10 Questions</span>
+          <span className="truncate block">10 Questions</span>
         </div>
-        <div className="bg-slate-900/60 p-2 rounded-xl border border-slate-800/80">
+        <div className="bg-slate-900/60 p-1.5 sm:p-2 rounded-xl border border-slate-800/80">
           <span className="block font-bold text-amber-400">🎁 Win Goodies</span>
-          <span>Booth B102</span>
+          <span className="truncate block">Booth B102</span>
         </div>
-        <div className="bg-slate-900/60 p-2 rounded-xl border border-slate-800/80">
+        <div className="bg-slate-900/60 p-1.5 sm:p-2 rounded-xl border border-slate-800/80">
           <span className="block font-bold text-emerald-400">📜 Certificate</span>
-          <span>Official Badge</span>
+          <span className="truncate block">Official Badge</span>
         </div>
       </div>
     </div>

@@ -94,12 +94,12 @@ export const QuizPage: React.FC = () => {
       )}
 
       {/* Bottom Action Controls */}
-      <div className="p-3.5 sm:p-4 bg-imtex-dark/95 backdrop-blur-md border-t border-imtex-border/50 flex items-center justify-between space-x-3">
+      <div className="p-3 sm:p-4 bg-imtex-dark/95 backdrop-blur-md border-t border-imtex-border/50 flex items-center justify-between space-x-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] sticky bottom-0 z-20">
         <button
           type="button"
           onClick={prevQuestion}
           disabled={isFirst || isSubmitting}
-          className="min-h-[48px] px-3.5 py-2.5 rounded-xl border border-slate-700 bg-slate-900/80 text-slate-300 font-bold text-xs flex items-center space-x-1.5 disabled:opacity-30 touch-press cursor-pointer"
+          className="min-h-[50px] px-4 py-2.5 rounded-xl border border-slate-700 bg-slate-900/80 active:bg-slate-800 text-slate-300 font-bold text-xs flex items-center space-x-1.5 disabled:opacity-30 touch-press cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
@@ -109,7 +109,7 @@ export const QuizPage: React.FC = () => {
           type="button"
           onClick={handleNextClick}
           disabled={!isAnswerSelected || isSubmitting}
-          className={`min-h-[48px] flex-1 py-3 px-4 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-lg transition-all touch-press cursor-pointer ${
+          className={`min-h-[50px] flex-1 py-3 px-4 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-lg transition-all touch-press cursor-pointer ${
             !isAnswerSelected
               ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed opacity-60'
               : isLast
@@ -153,7 +153,7 @@ export const QuizPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowConfirmModal(false)}
-                className="flex-1 min-h-[46px] py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 text-xs font-bold hover:bg-slate-750 cursor-pointer"
+                className="flex-1 min-h-[48px] py-2.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 text-xs font-bold hover:bg-slate-750 active:bg-slate-700 touch-press cursor-pointer"
               >
                 Review Answers
               </button>
@@ -164,7 +164,7 @@ export const QuizPage: React.FC = () => {
                   setShowConfirmModal(false);
                   submitQuiz();
                 }}
-                className="flex-1 min-h-[46px] py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 via-cyan-300 to-amber-400 text-slate-950 text-xs font-black shadow-glow-cyan hover:opacity-95 cursor-pointer"
+                className="flex-1 min-h-[48px] py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 via-cyan-300 to-amber-400 text-slate-950 text-xs font-black shadow-glow-cyan hover:opacity-95 touch-press cursor-pointer"
               >
                 {isSubmitting ? 'Submitting...' : 'Yes, Submit'}
               </button>
