@@ -10,11 +10,30 @@ import { StaffPortalPage } from './pages/StaffPortalPage';
 export const App: React.FC = () => {
   const { page } = useQuiz();
 
-  // Check if viewing staff portal route
-  const isStaffRoute = typeof window !== 'undefined' && (
-    window.location.pathname === '/staff' ||
-    window.location.hash === '#staff'
-  );
+  // Reactive staff route state supporting /staff, /staff/, #staff, and ?staff
+  const [isStaffRoute, setIsStaffRoute] = React.useState(() => {
+    if (typeof window === 'undefined') return false;
+    const path = window.location.pathname.replace(/\/+$/, '').toLowerCase();
+    const hash = window.location.hash.toLowerCase();
+    const search = window.location.search.toLowerCase();
+    return path === '/staff' || hash === '#staff' || search.includes('staff');
+  });
+
+  React.useEffect(() => {
+    const handleLocationChange = () => {
+      const path = window.location.pathname.replace(/\/+$/, '').toLowerCase();
+      const hash = window.location.hash.toLowerCase();
+      const search = window.location.search.toLowerCase();
+      setIsStaffRoute(path === '/staff' || hash === '#staff' || search.includes('staff'));
+    };
+
+    window.addEventListener('popstate', handleLocationChange);
+    window.addEventListener('hashchange', handleLocationChange);
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+      window.removeEventListener('hashchange', handleLocationChange);
+    };
+  }, []);
 
   if (isStaffRoute) {
     return (
@@ -50,7 +69,12 @@ export const App: React.FC = () => {
       <footer className="text-center pb-2 z-10">
         <a
           href="/staff"
-          className="text-[10px] text-slate-600 hover:text-slate-400 transition-colors"
+          onClick={(e) => {
+            e.preventDefault();
+            window.history.pushState({}, '', '/staff');
+            setIsStaffRoute(true);
+          }}
+          className="text-[10px] text-slate-600 hover:text-slate-400 transition-colors cursor-pointer"
         >
           Booth Staff Portal
         </a>

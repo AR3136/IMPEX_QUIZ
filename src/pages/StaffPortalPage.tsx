@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, Search, Gift, CheckCircle2, AlertTriangle, ShieldAlert, LogOut, ArrowRight, UserCheck, RefreshCw } from 'lucide-react';
+import { Lock, Search, Gift, CheckCircle2, AlertTriangle, ShieldAlert, LogOut, ArrowRight, ArrowLeft, UserCheck, RefreshCw, Eye, EyeOff } from 'lucide-react';
 import { BrandingBanner } from '../components/BrandingBanner';
 
 interface ParticipantRecord {
@@ -17,8 +17,32 @@ interface ParticipantRecord {
 
 const STORAGE_STAFF_TOKEN = 'imtex_staff_session_token';
 
+// Helper to gracefully attempt nested or flat serverless endpoints
+async function postStaffApi(endpoint: string, fallbackEndpoint: string, bodyObj: any, token?: string | null) {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  let res = await fetch(endpoint, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(bodyObj)
+  });
+
+  // If 404 Not Found on the nested path, seamlessly fallback to the flat endpoint
+  if (res.status === 404 && fallbackEndpoint) {
+    res = await fetch(fallbackEndpoint, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(bodyObj)
+    });
+  }
+
+  return res;
+}
+
 export const StaffPortalPage: React.FC = () => {
   const [passcode, setPasscode] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [token, setToken] = useState<string | null>(() => {
     try { return sessionStorage.getItem(STORAGE_STAFF_TOKEN); } catch { return null; }
   });
@@ -37,6 +61,12 @@ export const StaffPortalPage: React.FC = () => {
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
+  const handleReturnToQuiz = () => {
+    window.location.hash = '';
+    window.history.pushState({}, '', '/');
+    window.dispatchEvent(new Event('popstate'));
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!passcode.trim()) return;
@@ -45,11 +75,7 @@ export const StaffPortalPage: React.FC = () => {
     setAuthError(null);
 
     try {
-      const res = await fetch('/api/staff/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ passcode: passcode.trim() })
-      });
+      const res = await postStaffApi('/api/staff/login', '/api/staff-login', { passcode: passcode.trim() });
 
       const data = await res.json();
       if (!res.ok) {
@@ -84,14 +110,7 @@ export const StaffPortalPage: React.FC = () => {
     setActionError(null);
 
     try {
-      const res = await fetch('/api/staff/lookup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ submissionId: searchId.trim() })
-      });
+      const res = await postStaffApi('/api/staff/lookup', '/api/staff-lookup', { submissionId: searchId.trim() }, token);
 
       const data = await res.json();
       if (!res.ok) {
@@ -118,14 +137,7 @@ export const StaffPortalPage: React.FC = () => {
     setActionError(null);
 
     try {
-      const res = await fetch('/api/staff/collect', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ submissionId: participant.submissionId })
-      });
+      const res = await postStaffApi('/api/staff/collect', '/api/staff-collect', { submissionId: participant.submissionId }, token);
 
       const data = await res.json();
       if (!res.ok) {
@@ -176,15 +188,27 @@ export const StaffPortalPage: React.FC = () => {
           )}
 
           <form onSubmit={handleLogin} className="space-y-3">
-            <div>
+            <div className="relative">
               <input
-                type="password"
-                placeholder="Staff Passcode"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Enter Staff Passcode"
                 value={passcode}
                 onChange={e => setPasscode(e.target.value)}
                 disabled={isLoggingIn}
-                className="w-full min-h-[48px] bg-slate-900 border border-slate-700 focus:border-amber-400 rounded-xl px-4 py-2 text-center text-base sm:text-sm text-white tracking-widest outline-none font-mono"
+                autoCapitalize="none"
+                autoCorrect="off"
+                autoComplete="off"
+                spellCheck={false}
+                className="w-full min-h-[48px] bg-slate-900 border border-slate-700 focus:border-amber-400 rounded-xl pl-4 pr-11 py-2 text-center text-base sm:text-sm text-white tracking-widest outline-none font-mono"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(p => !p)}
+                className="absolute right-3 top-3.5 text-slate-400 hover:text-white p-0.5 cursor-pointer"
+                title={showPassword ? 'Hide passcode' : 'Show passcode'}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
 
             <button
@@ -195,6 +219,17 @@ export const StaffPortalPage: React.FC = () => {
               {isLoggingIn ? 'Authenticating...' : 'Enter Booth Staff Portal'}
             </button>
           </form>
+
+          <div className="pt-2 border-t border-slate-800/80">
+            <button
+              type="button"
+              onClick={handleReturnToQuiz}
+              className="text-xs text-slate-400 hover:text-cyan-400 inline-flex items-center space-x-1.5 transition-colors cursor-pointer"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Back to Attendee Quiz</span>
+            </button>
+          </div>
 
           <p className="text-[10px] text-slate-500">
             Protected server endpoint. Access attempts are rate-limited and logged.
@@ -214,13 +249,22 @@ export const StaffPortalPage: React.FC = () => {
           <span className="text-xs font-bold text-slate-200">Booth B102 Staff Active</span>
         </div>
 
-        <button
-          onClick={handleLogout}
-          className="text-xs text-slate-400 hover:text-red-400 flex items-center space-x-1 p-1 rounded cursor-pointer touch-press"
-        >
-          <LogOut className="w-3.5 h-3.5" />
-          <span>Exit Portal</span>
-        </button>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={handleReturnToQuiz}
+            className="text-xs text-slate-400 hover:text-cyan-400 flex items-center space-x-1 p-1 rounded cursor-pointer touch-press"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Quiz</span>
+          </button>
+          <button
+            onClick={handleLogout}
+            className="text-xs text-slate-400 hover:text-red-400 flex items-center space-x-1 p-1 rounded cursor-pointer touch-press"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Log Out</span>
+          </button>
+        </div>
       </div>
 
       {/* Participant ID Search Box */}

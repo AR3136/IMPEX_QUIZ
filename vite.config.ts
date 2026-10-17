@@ -33,20 +33,20 @@ function localApiPlugin(): Plugin {
             return;
           }
 
-          // Staff endpoints
-          if (pathname === '/api/staff/login') {
+          // Staff endpoints (supports both /api/staff/* and /api/staff-*)
+          if (pathname === '/api/staff/login' || pathname === '/api/staff-login') {
             const { default: handler } = await server.ssrLoadModule('/api/staff/login.ts');
             await handler(req, res);
             return;
           }
 
-          if (pathname === '/api/staff/lookup') {
+          if (pathname === '/api/staff/lookup' || pathname === '/api/staff-lookup') {
             const { default: handler } = await server.ssrLoadModule('/api/staff/lookup.ts');
             await handler(req, res);
             return;
           }
 
-          if (pathname === '/api/staff/collect') {
+          if (pathname === '/api/staff/collect' || pathname === '/api/staff-collect') {
             const { default: handler } = await server.ssrLoadModule('/api/staff/collect.ts');
             await handler(req, res);
             return;

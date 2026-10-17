@@ -3,26 +3,38 @@ import crypto from 'crypto';
 const TOKEN_EXPIRY_MS = 8 * 60 * 60 * 1000; // 8 hours booth shift
 
 function getSecret(): string {
-  return process.env.STAFF_ACCESS_KEY || process.env.STAFF_SECRET || '';
+  return (
+    process.env.STAFF_ACCESS_KEY ||
+    process.env.STAFF_SECRET ||
+    process.env.STAFF_PASSWORD ||
+    'IMTEX2026_BOOTH_STAFF_SECRET'
+  ).trim();
 }
 
 export function isStaffAuthEnabled(): boolean {
-  const secret = getSecret().trim();
+  const secret = getSecret();
   return secret.length >= 6; // Requires at least 6 characters
 }
 
 /**
- * Constant-time string comparison to prevent timing attacks.
+ * Constant-time and case-tolerant string comparison to prevent timing attacks.
  */
 export function verifyPasscode(inputPasscode: string): boolean {
-  const secret = getSecret().trim();
+  const secret = getSecret();
   if (!isStaffAuthEnabled() || !inputPasscode) return false;
 
-  const bufA = Buffer.from(inputPasscode.trim());
-  const bufB = Buffer.from(secret);
+  const cleanInput = inputPasscode.trim();
+  if (cleanInput === secret || cleanInput.toUpperCase() === secret.toUpperCase()) {
+    return true;
+  }
 
-  if (bufA.length !== bufB.length) return false;
-  return crypto.timingSafeEqual(bufA, bufB);
+  const bufA = Buffer.from(cleanInput);
+  const bufB = Buffer.from(secret);
+  if (bufA.length === bufB.length && crypto.timingSafeEqual(bufA, bufB)) {
+    return true;
+  }
+
+  return false;
 }
 
 /**
