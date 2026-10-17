@@ -60,8 +60,8 @@ export const ThankYouPage: React.FC = () => {
       {/* 1. Compact Header with Three Partner & Exhibition Logos */}
       <div className="w-full bg-white rounded-xl p-2 sm:p-2.5 shadow-card-dark border border-slate-200/90 flex items-center justify-around">
         <img
-          src="/logos/imtex-logo.jpeg"
-          alt="IMTEX Exhibition Logo"
+          src="/logos/imtex-2027-tricolor-brush-logo.png"
+          alt="IMTEX 2027 Exhibition Logo"
           className="h-6 sm:h-8 w-auto max-w-[70px] sm:max-w-[85px] object-contain"
         />
         <div className="w-[1px] h-4 sm:h-5 bg-slate-200" />

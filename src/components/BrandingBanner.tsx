@@ -11,8 +11,8 @@ export const BrandingBanner: React.FC<BrandingBannerProps> = ({ compact = false 
         <div className="bg-white rounded-lg px-1.5 sm:px-2 py-0.5 shadow-sm border border-slate-200/90 flex items-center space-x-1.5 sm:space-x-2 h-7 sm:h-8">
           {/* IMTEX */}
           <img
-            src="/logos/imtex-logo.jpeg"
-            alt="IMTEX Exhibition Logo"
+            src="/logos/imtex-2027-tricolor-brush-logo.png"
+            alt="IMTEX 2027 Exhibition Logo"
             className="h-4 sm:h-5 md:h-6 w-auto max-w-[48px] sm:max-w-[70px] object-contain"
           />
           <div className="w-[1px] h-3.5 sm:h-4 bg-slate-200" />
@@ -48,8 +48,8 @@ export const BrandingBanner: React.FC<BrandingBannerProps> = ({ compact = false 
             Official Exhibition Challenge
           </span>
           <img
-            src="/logos/imtex-logo.jpeg"
-            alt="IMTEX Exhibition Logo"
+            src="/logos/imtex-2027-tricolor-brush-logo.png"
+            alt="IMTEX 2027 Exhibition Logo"
             className="h-11 sm:h-16 w-auto max-w-[180px] sm:max-w-[210px] object-contain"
           />
         </div>
