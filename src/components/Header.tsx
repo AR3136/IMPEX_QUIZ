@@ -19,7 +19,7 @@ export const Header: React.FC<HeaderProps> = ({ showBoothInfo = true, compactHea
       {showBoothInfo && (
         <div className="flex items-center space-x-1 sm:space-x-1.5 bg-slate-900/95 border border-amber-500/40 rounded-full px-2 sm:px-2.5 py-1 shadow-sm shrink-0 ml-1.5">
           <MapPin className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-amber-400 shrink-0" />
-          <span className="text-[10px] sm:text-[11px] font-bold text-amber-300 whitespace-nowrap">Hall 3A • B102</span>
+          <span className="text-[10px] sm:text-[11px] font-bold text-amber-300 whitespace-nowrap">Hall H1 • A112</span>
         </div>
       )}
     </header>

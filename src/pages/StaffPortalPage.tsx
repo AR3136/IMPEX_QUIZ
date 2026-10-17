@@ -174,7 +174,7 @@ export const StaffPortalPage: React.FC = () => {
             <span className="text-[10px] font-black uppercase tracking-widest text-amber-400">
               Staff Portal
             </span>
-            <h1 className="text-xl font-black text-white">Booth B102 Login</h1>
+            <h1 className="text-xl font-black text-white">Booth A112 Login</h1>
             <p className="text-xs text-slate-300 mt-1">
               Enter your authorized staff passcode to access goodies redemption.
             </p>
@@ -246,7 +246,7 @@ export const StaffPortalPage: React.FC = () => {
       <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
         <div className="flex items-center space-x-2">
           <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-xs font-bold text-slate-200">Booth B102 Staff Active</span>
+          <span className="text-xs font-bold text-slate-200">Booth A112 Staff Active</span>
         </div>
 
         <div className="flex items-center space-x-3">

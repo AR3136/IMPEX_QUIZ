@@ -104,7 +104,7 @@ export default async function handler(req: any, res: any) {
         success: true,
         attemptId,
         message: 'Your quiz has been submitted successfully!',
-        boothMessage: 'Please show this confirmation screen at Booth B102 (Hall 3A) to claim your exclusive IMTEX souvenir!',
+        boothMessage: 'Please show this confirmation screen at Booth A112 (Hall H1) to claim your exclusive IMTEX souvenir!',
         isRetry: true,
         confirmedAt: new Date().toISOString()
       }));
@@ -137,7 +137,7 @@ export default async function handler(req: any, res: any) {
       success: true,
       attemptId,
       message: 'Your quiz has been submitted successfully!',
-      boothMessage: 'Please show this confirmation screen at Booth B102 (Hall 3A) to claim your exclusive IMTEX souvenir!',
+      boothMessage: 'Please show this confirmation screen at Booth A112 (Hall H1) to claim your exclusive IMTEX souvenir!',
       confirmedAt: new Date().toISOString()
     }));
 

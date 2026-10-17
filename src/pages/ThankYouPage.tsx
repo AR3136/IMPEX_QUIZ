@@ -41,7 +41,7 @@ export const ThankYouPage: React.FC = () => {
   };
 
   const handleShare = async () => {
-    const text = `I just participated in the IMTEX 2026/2027 Manufacturing Quiz Challenge! Visit Booth B102 (Hall 3A) to test your skills and collect tech goodies!`;
+    const text = `I just participated in the IMTEX 2026/2027 Manufacturing Quiz Challenge! Visit Booth A112 (Hall H1) to test your skills and collect tech goodies!`;
     if (navigator.share) {
       try {
         await navigator.share({
@@ -117,7 +117,7 @@ export const ThankYouPage: React.FC = () => {
           <span className="block font-bold text-amber-300 text-sm mb-0.5">
             👉 Please show this screen to the booth staff
           </span>
-          Visit <strong className="text-white">Booth B102 (Hall 3A)</strong> to verify your participation and claim your exclusive IMTEX tech souvenir!
+          Visit <strong className="text-white">Booth A112 (Hall H1)</strong> to verify your participation and claim your exclusive IMTEX tech souvenir!
         </div>
       </div>
 
@@ -194,7 +194,7 @@ export const ThankYouPage: React.FC = () => {
       {/* 6. Exhibition Location Tag */}
       <div className="text-center text-[10px] text-slate-500 flex items-center justify-center space-x-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))]">
         <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-        <span className="truncate max-w-full">BIEC • Hall 3A • Booth B102</span>
+        <span className="truncate max-w-full">BIEC • Hall H1 • Booth A112</span>
       </div>
     </div>
   );

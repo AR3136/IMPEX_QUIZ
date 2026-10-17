@@ -145,7 +145,7 @@ export const RegistrationPage: React.FC = () => {
 
         <p className="text-xs sm:text-[13px] text-slate-300 leading-relaxed max-w-sm mx-auto">
           Test your engineering and machining knowledge in this fast 10-question challenge. Complete the quiz and collect your exclusive gift hamper at{' '}
-          <strong className="text-amber-400 font-bold">Booth B102 (Hall 3A)</strong>!
+          <strong className="text-amber-400 font-bold">Booth A112 (Hall H1)</strong>!
         </p>
       </div>
 
@@ -395,7 +395,7 @@ export const RegistrationPage: React.FC = () => {
             <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
             <div>
               <strong className="text-white font-semibold">Privacy Notice: </strong>
-              Your information is collected solely for administering your exhibition quiz participation, verifying your goodie claim at Booth B102, and providing relevant technical updates from IMTEX and participating technology partners (Cogsdill & EnGenius). Your data is protected and never sold.
+              Your information is collected solely for administering your exhibition quiz participation, verifying your goodie claim at Booth A112 (Hall H1), and providing relevant technical updates from IMTEX and participating technology partners (Cogsdill & EnGenius). Your data is protected and never sold.
             </div>
           </div>
 
@@ -455,7 +455,7 @@ export const RegistrationPage: React.FC = () => {
         </div>
         <div className="bg-slate-900/60 p-1.5 sm:p-2 rounded-xl border border-slate-800/80">
           <span className="block font-bold text-amber-400">🎁 Win Goodies</span>
-          <span className="truncate block">Booth B102</span>
+          <span className="truncate block">Booth A112</span>
         </div>
         <div className="bg-slate-900/60 p-1.5 sm:p-2 rounded-xl border border-slate-800/80">
           <span className="block font-bold text-emerald-400">📜 Certificate</span>
