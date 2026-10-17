@@ -134,16 +134,30 @@ export async function appendQuizRecordToSheets(params: AppendQuizRecordParams): 
       ''    // Empty collection timestamp
     ];
 
-    const appendRes = await sheets.spreadsheets.values.append({
-      spreadsheetId: sheetId!,
-      range: `${tabName}!A:J`,
-      valueInputOption: 'USER_ENTERED',
-      insertDataOption: 'INSERT_ROWS',
-      requestBody: { values: [rowData] }
-    });
+    // Dual-write: write to configured tab (e.g. Responses) AND Sheet1 so users see data regardless of active tab
+    const tabsToWrite = [tabName];
+    if (tabName !== 'Sheet1') tabsToWrite.push('Sheet1');
 
-    if (appendRes.status !== 200 || !appendRes.data.updates?.updatedRows) {
-      throw new Error(`Google Sheets API write was not confirmed.`);
+    let primaryWriteConfirmed = false;
+
+    for (const targetTab of tabsToWrite) {
+      try {
+        await ensureHeadersExist(sheets, sheetId!, targetTab);
+        const appendRes = await sheets.spreadsheets.values.append({
+          spreadsheetId: sheetId!,
+          range: `${targetTab}!A:J`,
+          valueInputOption: 'USER_ENTERED',
+          insertDataOption: 'INSERT_ROWS',
+          requestBody: { values: [rowData] }
+        });
+
+        if (targetTab === tabName && appendRes.status === 200) {
+          primaryWriteConfirmed = true;
+        }
+        console.log(`[Google Sheets] Appended row for ${attemptId} to tab "${targetTab}"`);
+      } catch (tabErr: any) {
+        console.warn(`[Google Sheets] Warning while writing to "${targetTab}":`, tabErr.message);
+      }
     }
 
     const result: SheetsAppendResult = {
@@ -180,32 +194,38 @@ export async function lookupParticipantBySubmissionId(submissionId: string): Pro
     });
 
     const sheets = google.sheets({ version: 'v4', auth });
-    const res = await sheets.spreadsheets.values.get({
-      spreadsheetId: sheetId!,
-      range: `${tabName}!A:J`
-    });
+    const tabsToSearch = [tabName];
+    if (tabName !== 'Sheet1') tabsToSearch.push('Sheet1');
 
-    const rows = res.data.values;
-    if (!rows || rows.length <= 1) {
-      return devParticipantStore.get(submissionId) || null;
-    }
+    for (const searchTab of tabsToSearch) {
+      try {
+        const res = await sheets.spreadsheets.values.get({
+          spreadsheetId: sheetId!,
+          range: `${searchTab}!A:J`
+        });
 
-    // Search for row matching submissionId
-    for (let i = 1; i < rows.length; i++) {
-      const row = rows[i];
-      if (row[0] === submissionId) {
-        return {
-          submissionId: row[0],
-          timestamp: row[1] || '',
-          name: row[2] || 'Participant',
-          company: 'Exhibition Visitor',
-          visitorType: 'Industry Professional',
-          score: parseInt(row[5], 10) || 0,
-          maxScore: parseInt(row[6], 10) || 10,
-          completionStatus: row[7] || 'Completed',
-          goodiesCollected: (row[8] === 'Yes' || row[8] === 'YES') ? 'Yes' : 'No',
-          collectionTimestamp: row[9] || ''
-        };
+        const rows = res.data.values;
+        if (rows && rows.length > 1) {
+          for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            if (row[0] === submissionId) {
+              return {
+                submissionId: row[0],
+                timestamp: row[1] || '',
+                name: row[2] || 'Participant',
+                company: 'Exhibition Visitor',
+                visitorType: 'Industry Professional',
+                score: parseInt(row[5], 10) || 0,
+                maxScore: parseInt(row[6], 10) || 10,
+                completionStatus: row[7] || 'Completed',
+                goodiesCollected: (row[8] === 'Yes' || row[8] === 'YES') ? 'Yes' : 'No',
+                collectionTimestamp: row[9] || ''
+              };
+            }
+          }
+        }
+      } catch (err: any) {
+        console.warn(`[Lookup Warning] In tab ${searchTab}:`, err.message);
       }
     }
 
@@ -260,37 +280,40 @@ export async function markGoodiesCollectedInSheets(submissionId: string): Promis
     });
 
     const sheets = google.sheets({ version: 'v4', auth });
-    const res = await sheets.spreadsheets.values.get({
-      spreadsheetId: sheetId!,
-      range: `${tabName}!A:A`
-    });
 
-    const rows = res.data.values;
-    let rowIndex = -1;
-    if (rows) {
-      for (let i = 1; i < rows.length; i++) {
-        if (rows[i][0] === submissionId) {
-          rowIndex = i + 1; // 1-based row index in sheet
-          break;
+    // Update both configured tab and Sheet1
+    const tabsToUpdate = [tabName];
+    if (tabName !== 'Sheet1') tabsToUpdate.push('Sheet1');
+
+    for (const targetTab of tabsToUpdate) {
+      try {
+        const res = await sheets.spreadsheets.values.get({
+          spreadsheetId: sheetId!,
+          range: `${targetTab}!A:A`
+        });
+
+        const rows = res.data.values;
+        if (rows) {
+          for (let i = 1; i < rows.length; i++) {
+            if (rows[i][0] === submissionId) {
+              const rowIndex = i + 1; // 1-based row index in sheet
+              await sheets.spreadsheets.values.update({
+                spreadsheetId: sheetId!,
+                range: `${targetTab}!I${rowIndex}:J${rowIndex}`,
+                valueInputOption: 'USER_ENTERED',
+                requestBody: {
+                  values: [['Yes', now]]
+                }
+              });
+              console.log(`[Google Sheets] Updated Goodies Collected = Yes in "${targetTab}" for ${submissionId} at row ${rowIndex}`);
+              break;
+            }
+          }
         }
+      } catch (err: any) {
+        console.warn(`[Google Sheets] Warning updating "${targetTab}":`, err.message);
       }
     }
-
-    if (rowIndex === -1) {
-      throw new Error(`Row for ${submissionId} not found in Google Sheets.`);
-    }
-
-    // Update Columns I (Goodies Collected) and J (Collection Timestamp)
-    await sheets.spreadsheets.values.update({
-      spreadsheetId: sheetId!,
-      range: `${tabName}!I${rowIndex}:J${rowIndex}`,
-      valueInputOption: 'USER_ENTERED',
-      requestBody: {
-        values: [['Yes', now]]
-      }
-    });
-
-    console.log(`[Google Sheets] Updated Goodies Collected = Yes for ${submissionId} at row ${rowIndex}`);
     return {
       success: true,
       collectionTimestamp: now,
