@@ -1,87 +1,58 @@
 import React, { useState } from 'react';
 import { useQuiz } from '../context/QuizContext';
-import { BrandingBanner } from '../components/BrandingBanner';
-import {
-  validateName,
-  validateEmail,
-  validatePhone,
-  validateRegistrationForm,
-  RegistrationFormData,
-} from '../utils/validation';
+import { validateName, validatePhone } from '../utils/validation';
 import {
   User,
-  Mail,
   Phone,
-  Building2,
-  Briefcase,
-  MapPin,
   ArrowRight,
   Sparkles,
   ShieldCheck,
-  Gift,
-  AlertCircle,
-  CheckCircle2,
-  ChevronDown,
-  ChevronUp
+  AlertCircle
 } from 'lucide-react';
-
-const VISITOR_TYPES = [
-  'Industry Professional',
-  'Machine Tool Buyer / Sourcing',
-  'Design & R&D Engineer',
-  'Production & Quality Head',
-  'Student / Academician',
-  'Exhibitor / Partner',
-];
 
 export const RegistrationPage: React.FC = () => {
   const { startQuiz, isLoading, error: serverError } = useQuiz();
 
-  // Form State - Personal info stays strictly local until submitted
-  const [formData, setFormData] = useState<RegistrationFormData>({
-    name: '',
-    email: '',
-    phone: '',
-    company: '',
-    designation: '',
-    city: '',
-    visitorType: 'Industry Professional',
-    consent: false, // Unchecked by default per requirement
-  });
+  // Minimal form state: Full Name & Mobile Number (Unique Entry ID)
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
 
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isSubmittingLocal, setIsSubmittingLocal] = useState(false);
-  const [showOptionalFields, setShowOptionalFields] = useState(false);
 
-  // Field change handler with real-time error clearance
-  const handleChange = (field: keyof RegistrationFormData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-
-    // Real-time re-validation if already touched
-    if (touched[field]) {
-      let err: string | null = null;
-      if (field === 'name') err = validateName(value);
-      if (field === 'email') err = validateEmail(value);
-      if (field === 'phone') err = validatePhone(value);
-      if (field === 'consent') err = value ? null : 'Consent is required to participate';
-
+  // Field change handlers with live error clearing
+  const handleNameChange = (val: string) => {
+    setName(val);
+    if (touched.name) {
+      const err = validateName(val);
       setValidationErrors(prev => {
         const next = { ...prev };
-        if (err) next[field] = err;
-        else delete next[field];
+        if (err) next.name = err;
+        else delete next.name;
         return next;
       });
     }
   };
 
-  const handleBlur = (field: keyof RegistrationFormData) => {
+  const handlePhoneChange = (val: string) => {
+    setPhone(val);
+    if (touched.phone) {
+      const err = validatePhone(val);
+      setValidationErrors(prev => {
+        const next = { ...prev };
+        if (err) next.phone = err;
+        else delete next.phone;
+        return next;
+      });
+    }
+  };
+
+  const handleBlur = (field: 'name' | 'phone') => {
     setTouched(prev => ({ ...prev, [field]: true }));
     let err: string | null = null;
-    if (field === 'name') err = validateName(formData.name);
-    if (field === 'email') err = validateEmail(formData.email);
-    if (field === 'phone') err = validatePhone(formData.phone);
-    if (field === 'consent') err = formData.consent ? null : 'Consent is required to participate';
+    if (field === 'name') err = validateName(name);
+    if (field === 'phone') err = validatePhone(phone);
 
     setValidationErrors(prev => {
       const next = { ...prev };
@@ -91,32 +62,33 @@ export const RegistrationPage: React.FC = () => {
     });
   };
 
-  // Submit handler with strict validation and double-submission protection
+  // Submit handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Prevent repeated simultaneous clicks
     if (isLoading || isSubmittingLocal) return;
 
-    // Mark all fields touched
-    setTouched({
-      name: true,
-      email: true,
-      phone: true,
-      consent: true,
-    });
+    setTouched({ name: true, phone: true });
 
-    const validation = validateRegistrationForm(formData);
-    if (!validation.isValid) {
-      setValidationErrors(validation.errors);
+    const nameErr = validateName(name);
+    const phoneErr = validatePhone(phone);
+
+    if (nameErr || phoneErr) {
+      const errors: Record<string, string> = {};
+      if (nameErr) errors.name = nameErr;
+      if (phoneErr) errors.phone = phoneErr;
+      setValidationErrors(errors);
       return;
     }
 
     try {
       setIsSubmittingLocal(true);
-      await startQuiz(formData);
+      await startQuiz({
+        name: name.trim(),
+        phone: phone.trim(),
+      });
     } catch {
-      // Server error is handled via context and displayed below
+      // Server error is handled via QuizContext and displayed in the alert below
     } finally {
       setIsSubmittingLocal(false);
     }
@@ -125,341 +97,165 @@ export const RegistrationPage: React.FC = () => {
   const isFormBusy = isLoading || isSubmittingLocal;
 
   return (
-    <div className="w-full flex-1 flex flex-col justify-between px-3.5 sm:px-4 py-3 sm:py-4 max-w-md mx-auto">
-      {/* 1. Official Exhibition & Partner Logos */}
-      <BrandingBanner />
-
-      {/* 2. Welcome Message & Exhibition Invitation */}
-      <div className="text-center space-y-2 mb-3.5">
-        <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-cyan-950/90 to-blue-950/90 border border-cyan-500/40 text-cyan-300 text-xs font-semibold shadow-glow-cyan">
-          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+    <div className="w-full flex-1 flex flex-col justify-between px-3.5 sm:px-4 py-3 sm:py-5 max-w-md mx-auto space-y-4">
+      {/* 1. Welcome Message & Exhibition Invitation */}
+      <div className="text-center space-y-2.5">
+        <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-imtex-card/90 border border-imtex-gold/50 text-imtex-gold text-xs sm:text-sm font-semibold shadow-glow-gold-sm">
+          <Sparkles className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-imtex-gold" aria-hidden="true" />
           <span>IMTEX 2026 / 2027 Challenge</span>
         </div>
 
-        <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-snug">
+        <h1 className="text-2xl sm:text-3xl font-black text-[#F5F5F5] tracking-tight leading-snug">
           Welcome to the{' '}
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-white to-amber-400">
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-imtex-goldLight via-imtex-gold to-imtex-goldHover">
             Manufacturing Quiz
           </span>
         </h1>
 
-        <p className="text-xs sm:text-[13px] text-slate-300 leading-relaxed max-w-sm mx-auto">
+        <p className="text-sm sm:text-base text-[#D9E0E1] leading-relaxed max-w-sm mx-auto">
           Test your engineering and machining knowledge in this fast 10-question challenge. Complete the quiz and collect your exclusive gift hamper at{' '}
-          <strong className="text-amber-400 font-bold">Booth A112 (Hall H1)</strong>!
+          <strong className="text-imtex-gold font-bold">Booth A161 (Hall 4)</strong>!
         </p>
       </div>
 
-      {/* 3. Registration Form Container */}
-      <form onSubmit={handleSubmit} noValidate className="glass-panel rounded-2xl p-4 sm:p-5 shadow-card-dark space-y-3.5">
-        {/* Server Error Alert */}
+      {/* 2. Minimal Registration Form Container */}
+      <form onSubmit={handleSubmit} noValidate className="glass-panel rounded-2xl p-4 sm:p-6 shadow-card-dark border border-imtex-gold/30 space-y-4">
+        {/* Server Alert Message (polite duplicate explanation or connection issue) */}
         {serverError && (
-          <div className="bg-red-950/90 border border-red-500/60 text-red-200 text-xs p-3 rounded-xl flex items-center space-x-2.5">
-            <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
-            <span className="flex-1">{serverError}</span>
+          <div
+            role="alert"
+            className="bg-amber-950/90 border border-imtex-gold text-amber-100 text-sm p-3.5 rounded-xl flex items-start space-x-2.5 leading-relaxed shadow-lg animate-fadeIn"
+          >
+            <AlertCircle className="w-5 h-5 text-imtex-gold shrink-0 mt-0.5" aria-hidden="true" />
+            <div className="flex-1">
+              <strong className="block text-imtex-gold font-bold mb-0.5">Participation Notice</strong>
+              <span>{serverError}</span>
+            </div>
           </div>
         )}
 
-        {/* --- MANDATORY FIELD 1: Full Name --- */}
+        {/* --- FIELD 1: Full Name --- */}
         <div>
-          <div className="flex items-center justify-between mb-1">
-            <label htmlFor="reg-name" className="text-xs font-bold text-slate-200 flex items-center space-x-1">
+          <div className="flex items-center justify-between mb-1.5">
+            <label htmlFor="reg-name" className="text-sm sm:text-base font-bold text-[#F5F5F5] flex items-center space-x-1.5">
+              <User className="w-4 h-4 text-imtex-gold" aria-hidden="true" />
               <span>Full Name</span>
-              <span className="text-cyan-400 text-sm">*</span>
+              <span className="text-imtex-gold font-bold">*</span>
             </label>
-            <span className="text-[10px] text-slate-400 font-medium">Mandatory</span>
           </div>
-          <div className="relative">
-            <User className={`w-4 h-4 absolute left-3 top-3.5 transition-colors ${
-              validationErrors.name ? 'text-red-400' : touched.name && formData.name ? 'text-cyan-400' : 'text-slate-400'
-            }`} />
-            <input
-              id="reg-name"
-              type="text"
-              autoComplete="name"
-              placeholder="e.g. Vikram Sharma"
-              value={formData.name}
-              onChange={e => handleChange('name', e.target.value)}
-              onBlur={() => handleBlur('name')}
-              disabled={isFormBusy}
-              className={`w-full min-h-[48px] bg-slate-900/80 border rounded-xl pl-9 pr-9 py-2.5 text-base sm:text-sm text-white placeholder-slate-500 transition-all outline-none ${
-                validationErrors.name
-                  ? 'border-red-500 ring-1 ring-red-500/50 bg-red-950/20'
-                  : touched.name && formData.name && !validationErrors.name
-                  ? 'border-cyan-500/60 ring-1 ring-cyan-500/30'
-                  : 'border-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400'
-              }`}
-            />
-            {touched.name && formData.name && !validationErrors.name && (
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 absolute right-3 top-3.5" />
-            )}
-          </div>
+
+          <input
+            id="reg-name"
+            type="text"
+            required
+            autoComplete="name"
+            placeholder="e.g. Rajesh Kumar"
+            value={name}
+            onChange={e => handleNameChange(e.target.value)}
+            onBlur={() => handleBlur('name')}
+            disabled={isFormBusy}
+            aria-invalid={Boolean(validationErrors.name)}
+            aria-describedby={validationErrors.name ? 'reg-name-error' : undefined}
+            className={`w-full min-h-[50px] px-4 py-3 rounded-xl border bg-white text-[#202B2E] placeholder-slate-400 focus:outline-none transition-all text-base ${
+              validationErrors.name
+                ? 'border-red-500 focus:ring-2 focus:ring-red-400/50'
+                : 'border-slate-300 focus:border-imtex-gold focus:ring-2 focus:ring-imtex-gold/40'
+            }`}
+          />
+
           {validationErrors.name && (
-            <p className="text-[11px] text-red-400 mt-1 flex items-center space-x-1">
-              <AlertCircle className="w-3 h-3 shrink-0" />
+            <p id="reg-name-error" className="text-xs sm:text-sm text-red-400 mt-1.5 flex items-center space-x-1">
+              <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
               <span>{validationErrors.name}</span>
             </p>
           )}
         </div>
 
-        {/* --- MANDATORY FIELD 2: Email Address --- */}
+        {/* --- FIELD 2: Mobile Number (Unique Entry ID) --- */}
         <div>
-          <div className="flex items-center justify-between mb-1">
-            <label htmlFor="reg-email" className="text-xs font-bold text-slate-200 flex items-center space-x-1">
-              <span>Email Address</span>
-              <span className="text-cyan-400 text-sm">*</span>
-            </label>
-            <span className="text-[10px] text-slate-400 font-medium">Mandatory</span>
-          </div>
-          <div className="relative">
-            <Mail className={`w-4 h-4 absolute left-3 top-3.5 transition-colors ${
-              validationErrors.email ? 'text-red-400' : touched.email && formData.email ? 'text-cyan-400' : 'text-slate-400'
-            }`} />
-            <input
-              id="reg-email"
-              type="email"
-              autoComplete="email"
-              placeholder="name@company.com"
-              value={formData.email}
-              onChange={e => handleChange('email', e.target.value)}
-              onBlur={() => handleBlur('email')}
-              disabled={isFormBusy}
-              className={`w-full min-h-[48px] bg-slate-900/80 border rounded-xl pl-9 pr-9 py-2.5 text-base sm:text-sm text-white placeholder-slate-500 transition-all outline-none ${
-                validationErrors.email
-                  ? 'border-red-500 ring-1 ring-red-500/50 bg-red-950/20'
-                  : touched.email && formData.email && !validationErrors.email
-                  ? 'border-cyan-500/60 ring-1 ring-cyan-500/30'
-                  : 'border-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400'
-              }`}
-            />
-            {touched.email && formData.email && !validationErrors.email && (
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 absolute right-3 top-3.5" />
-            )}
-          </div>
-          {validationErrors.email && (
-            <p className="text-[11px] text-red-400 mt-1 flex items-center space-x-1">
-              <AlertCircle className="w-3 h-3 shrink-0" />
-              <span>{validationErrors.email}</span>
-            </p>
-          )}
-        </div>
-
-        {/* --- MANDATORY FIELD 3: Mobile Number --- */}
-        <div>
-          <div className="flex items-center justify-between mb-1">
-            <label htmlFor="reg-phone" className="text-xs font-bold text-slate-200 flex items-center space-x-1">
+          <div className="flex items-center justify-between mb-1.5">
+            <label htmlFor="reg-phone" className="text-sm sm:text-base font-bold text-[#F5F5F5] flex items-center space-x-1.5">
+              <Phone className="w-4 h-4 text-imtex-gold" aria-hidden="true" />
               <span>Mobile Number</span>
-              <span className="text-cyan-400 text-sm">*</span>
+              <span className="text-imtex-gold font-bold">*</span>
             </label>
-            <span className="text-[10px] text-slate-400 font-medium">Mandatory</span>
+            <span className="text-xs text-[#D9E0E1]">Unique Quiz Entry ID</span>
           </div>
-          <div className="relative">
-            <Phone className={`w-4 h-4 absolute left-3 top-3.5 transition-colors ${
-              validationErrors.phone ? 'text-red-400' : touched.phone && formData.phone ? 'text-cyan-400' : 'text-slate-400'
-            }`} />
-            <input
-              id="reg-phone"
-              type="tel"
-              autoComplete="tel"
-              placeholder="e.g. 9876543210 or +91 98765 43210"
-              value={formData.phone}
-              onChange={e => handleChange('phone', e.target.value)}
-              onBlur={() => handleBlur('phone')}
-              disabled={isFormBusy}
-              className={`w-full min-h-[48px] bg-slate-900/80 border rounded-xl pl-9 pr-9 py-2.5 text-base sm:text-sm text-white placeholder-slate-500 transition-all outline-none font-mono ${
-                validationErrors.phone
-                  ? 'border-red-500 ring-1 ring-red-500/50 bg-red-950/20'
-                  : touched.phone && formData.phone && !validationErrors.phone
-                  ? 'border-cyan-500/60 ring-1 ring-cyan-500/30'
-                  : 'border-slate-700 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400'
-              }`}
-            />
-            {touched.phone && formData.phone && !validationErrors.phone && (
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 absolute right-3 top-3.5" />
-            )}
-          </div>
+
+          <input
+            id="reg-phone"
+            type="tel"
+            inputMode="tel"
+            required
+            autoComplete="tel"
+            placeholder="e.g. 98765 43210 or +91..."
+            value={phone}
+            onChange={e => handlePhoneChange(e.target.value)}
+            onBlur={() => handleBlur('phone')}
+            disabled={isFormBusy}
+            aria-invalid={Boolean(validationErrors.phone)}
+            aria-describedby={validationErrors.phone ? 'reg-phone-error' : 'reg-phone-hint'}
+            className={`w-full min-h-[50px] px-4 py-3 rounded-xl border bg-white text-[#202B2E] placeholder-slate-400 focus:outline-none transition-all text-base font-mono ${
+              validationErrors.phone
+                ? 'border-red-500 focus:ring-2 focus:ring-red-400/50'
+                : 'border-slate-300 focus:border-imtex-gold focus:ring-2 focus:ring-imtex-gold/40'
+            }`}
+          />
+
           {validationErrors.phone ? (
-            <p className="text-[11px] text-red-400 mt-1 flex items-center space-x-1">
-              <AlertCircle className="w-3 h-3 shrink-0" />
+            <p id="reg-phone-error" className="text-xs sm:text-sm text-red-400 mt-1.5 flex items-center space-x-1">
+              <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
               <span>{validationErrors.phone}</span>
             </p>
           ) : (
-            <p className="text-[10px] text-slate-400 mt-1">
-              Indian 10-digit mobile, with optional country code (+91, +1, etc.)
+            <p id="reg-phone-hint" className="text-xs text-[#D9E0E1] mt-1">
+              1 attempt per mobile number. Used to claim your gift hamper at Booth A161 (Hall 4).
             </p>
           )}
         </div>
 
-        {/* Optional Professional Details Toggle */}
-        <div className="pt-1">
-          <button
-            type="button"
-            onClick={() => setShowOptionalFields(prev => !prev)}
-            className="w-full flex items-center justify-between py-2 text-xs font-semibold text-slate-300 hover:text-cyan-300 border-t border-slate-700/60 cursor-pointer"
-          >
-            <span>Add Company / Designation Details (Optional)</span>
-            {showOptionalFields ? <ChevronUp className="w-4 h-4 text-cyan-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
-          </button>
-
-          {showOptionalFields && (
-            <div className="space-y-3 pt-2">
-              {/* Company & Designation */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label htmlFor="reg-company" className="block text-[11px] font-semibold text-slate-300 mb-1">
-                    Company / Organization
-                  </label>
-                  <div className="relative">
-                    <Building2 className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
-                    <input
-                      id="reg-company"
-                      type="text"
-                      placeholder="e.g. Precision CNC Works"
-                      value={formData.company}
-                      onChange={e => handleChange('company', e.target.value)}
-                      disabled={isFormBusy}
-                      className="w-full min-h-[48px] bg-slate-900/80 border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-base sm:text-xs text-white placeholder-slate-500 outline-none focus:border-cyan-400"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="reg-role" className="block text-[11px] font-semibold text-slate-300 mb-1">
-                    Designation / Role
-                  </label>
-                  <div className="relative">
-                    <Briefcase className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
-                    <input
-                      id="reg-role"
-                      type="text"
-                      placeholder="e.g. Production Lead"
-                      value={formData.designation}
-                      onChange={e => handleChange('designation', e.target.value)}
-                      disabled={isFormBusy}
-                      className="w-full min-h-[48px] bg-slate-900/80 border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-base sm:text-xs text-white placeholder-slate-500 outline-none focus:border-cyan-400"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* City & Category */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label htmlFor="reg-city" className="block text-[11px] font-semibold text-slate-300 mb-1">
-                    City / State
-                  </label>
-                  <div className="relative">
-                    <MapPin className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
-                    <input
-                      id="reg-city"
-                      type="text"
-                      placeholder="e.g. Bengaluru, Pune"
-                      value={formData.city}
-                      onChange={e => handleChange('city', e.target.value)}
-                      disabled={isFormBusy}
-                      className="w-full min-h-[48px] bg-slate-900/80 border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-base sm:text-xs text-white placeholder-slate-500 outline-none focus:border-cyan-400"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="reg-type" className="block text-[11px] font-semibold text-slate-300 mb-1">
-                    Visitor Category
-                  </label>
-                  <select
-                    id="reg-type"
-                    value={formData.visitorType}
-                    onChange={e => handleChange('visitorType', e.target.value)}
-                    disabled={isFormBusy}
-                    className="w-full min-h-[48px] bg-slate-900/80 border border-slate-700 rounded-xl px-3 py-2 text-base sm:text-xs text-white outline-none focus:border-cyan-400 cursor-pointer"
-                  >
-                    {VISITOR_TYPES.map(type => (
-                      <option key={type} value={type} className="bg-slate-900 text-white">
-                        {type}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* --- PRIVACY NOTICE & UNCHECKED CONSENT CHECKBOX --- */}
-        <div className={`rounded-xl p-3 sm:p-3.5 border transition-all ${
-          validationErrors.consent
-            ? 'bg-red-950/30 border-red-500/60'
-            : 'bg-slate-900/90 border-slate-700/80'
-        }`}>
-          {/* Privacy Notice Statement */}
-          <div className="flex items-start space-x-2 text-[11px] text-slate-300 leading-relaxed mb-3">
-            <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-            <div>
-              <strong className="text-white font-semibold">Privacy Notice: </strong>
-              Your information is collected solely for administering your exhibition quiz participation, verifying your goodie claim at Booth A112 (Hall H1), and providing relevant technical updates from IMTEX and participating technology partners (Cogsdill & EnGenius). Your data is protected and never sold.
-            </div>
+        {/* --- CONCISE ACCESSIBLE PRIVACY NOTICE (No mandatory checkbox) --- */}
+        <div className="p-3 rounded-xl bg-imtex-dark/85 border border-imtex-gold/30 flex items-start space-x-2.5 text-xs sm:text-sm text-[#D9E0E1] leading-relaxed">
+          <ShieldCheck className="w-4 sm:w-5 h-4 sm:h-5 text-imtex-gold shrink-0 mt-0.5" aria-hidden="true" />
+          <div>
+            <strong className="text-[#F5F5F5] font-semibold">Privacy Notice: </strong>
+            Your name and mobile number are collected solely for administering your exhibition quiz participation and verifying your gift hamper claim at Booth A161 (Hall 4). Your data is protected and never shared or sold.
           </div>
-
-          {/* Unchecked Mandatory Consent Checkbox */}
-          <label className="flex items-start space-x-3 cursor-pointer select-none group p-1 -m-1 rounded-lg hover:bg-slate-800/40 transition-colors">
-            <div className="relative flex items-center pt-0.5">
-              <input
-                id="reg-consent"
-                type="checkbox"
-                checked={formData.consent}
-                onChange={e => handleChange('consent', e.target.checked)}
-                onBlur={() => handleBlur('consent')}
-                disabled={isFormBusy}
-                className="w-5 h-5 rounded border border-slate-600 bg-slate-950 text-cyan-500 focus:ring-cyan-400 focus:ring-offset-0 focus:ring-1 cursor-pointer accent-cyan-400"
-              />
-            </div>
-            <span className={`text-[11px] leading-tight transition-colors ${
-              validationErrors.consent ? 'text-red-300 font-semibold' : 'text-slate-200 group-hover:text-white'
-            }`}>
-              I agree to the collection and use of my contact information for exhibition quiz participation, gift collection, and partner follow-up. <span className="text-cyan-400 font-bold">*</span>
-            </span>
-          </label>
-
-          {validationErrors.consent && (
-            <p className="text-[11px] text-red-400 mt-2 flex items-center space-x-1 pl-7">
-              <AlertCircle className="w-3 h-3 shrink-0" />
-              <span>{validationErrors.consent}</span>
-            </p>
-          )}
         </div>
 
-        {/* --- START QUIZ ACTION BUTTON --- */}
+        {/* --- START CHALLENGE ACTION BUTTON (Golden yellow with dark text) --- */}
         <button
           type="submit"
           disabled={isFormBusy}
-          className="w-full min-h-[52px] py-3.5 px-4 rounded-xl font-black text-slate-950 bg-gradient-to-r from-cyan-400 via-cyan-300 to-amber-400 hover:opacity-95 shadow-glow-cyan flex items-center justify-center space-x-2 transition-all touch-press disabled:opacity-50 text-sm sm:text-base cursor-pointer"
+          className="w-full min-h-[54px] sm:min-h-[58px] py-3.5 px-5 rounded-xl font-black text-[#202B2E] bg-imtex-gold hover:bg-imtex-goldHover active:bg-[#d4ad4f] shadow-glow-gold flex items-center justify-center space-x-2 transition-all touch-press disabled:opacity-50 text-base sm:text-lg cursor-pointer"
         >
           {isFormBusy ? (
             <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
-              <span>Registering & Preparing Quiz...</span>
+              <div className="w-5 h-5 border-2 border-[#202B2E] border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+              <span>Checking Details & Preparing Quiz...</span>
             </div>
           ) : (
             <>
               <span>Start Challenge (10 Qs)</span>
-              <ArrowRight className="w-5 h-5" />
+              <ArrowRight className="w-5 h-5" aria-hidden="true" />
             </>
           )}
         </button>
       </form>
 
-      {/* 4. Quick Highlights Footer */}
-      <div className="mt-3.5 grid grid-cols-3 gap-1.5 sm:gap-2 text-center text-[10px] sm:text-[11px] text-slate-400">
-        <div className="bg-slate-900/60 p-1.5 sm:p-2 rounded-xl border border-slate-800/80">
-          <span className="block font-bold text-cyan-400">⏱️ ~2 Mins</span>
-          <span className="truncate block">10 Questions</span>
+      {/* 3. Quick Highlights Footer */}
+      <div className="grid grid-cols-3 gap-2 text-center text-xs sm:text-sm text-[#D9E0E1]">
+        <div className="bg-imtex-card/80 p-2 sm:p-2.5 rounded-xl border border-imtex-gold/25">
+          <span className="block font-bold text-imtex-gold">⏱️ ~2 Mins</span>
+          <span className="block text-[#D9E0E1]/80">10 Questions</span>
         </div>
-        <div className="bg-slate-900/60 p-1.5 sm:p-2 rounded-xl border border-slate-800/80">
-          <span className="block font-bold text-amber-400">🎁 Win Goodies</span>
-          <span className="truncate block">Booth A112</span>
+        <div className="bg-imtex-card/80 p-2 sm:p-2.5 rounded-xl border border-imtex-gold/25">
+          <span className="block font-bold text-imtex-gold">🎁 Gift Hamper</span>
+          <span className="block text-[#D9E0E1]/80">Booth A161</span>
         </div>
-        <div className="bg-slate-900/60 p-1.5 sm:p-2 rounded-xl border border-slate-800/80">
-          <span className="block font-bold text-emerald-400">📜 Certificate</span>
-          <span className="truncate block">Official Badge</span>
+        <div className="bg-imtex-card/80 p-2 sm:p-2.5 rounded-xl border border-imtex-gold/25">
+          <span className="block font-bold text-imtex-gold">📜 Official Pass</span>
+          <span className="block text-[#D9E0E1]/80">IMTEX Souvenir</span>
         </div>
       </div>
     </div>

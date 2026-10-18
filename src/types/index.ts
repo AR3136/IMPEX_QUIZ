@@ -12,24 +12,29 @@ export interface ClientQuestion {
 }
 
 export interface VisitorLead {
-  submissionId: string;
   name: string;
-  email: string;
   phone: string;
+  email?: string;
+  submissionId?: string;
   company?: string;
   designation?: string;
   city?: string;
   visitorType?: string;
-  consent: boolean;
-  registeredAt: string;
+  consent?: boolean;
+  registeredAt?: string;
 }
 
 export interface SubmissionResponse {
   success: boolean;
   attemptId: string;
+  score?: number;
+  maxScore?: number;
   message: string;
   boothMessage: string;
-  sheetsSync: any;
+  isRetry?: boolean;
+  confirmedAt?: string;
+  alreadyCompleted?: boolean;
+  error?: string;
 }
 
 export interface QuizSubmission {

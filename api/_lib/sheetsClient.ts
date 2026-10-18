@@ -121,12 +121,15 @@ export async function appendQuizRecordToSheets(params: AppendQuizRecordParams): 
     // Row Schema:
     // [Submission ID, Timestamp, Full Name, Email, Mobile, Total Score, Max Score, Completion Status, Goodies Collected, Collection Timestamp]
     const timestamp = visitor.registeredAt || new Date().toISOString();
+    const rawMobile = visitor.phone ? String(visitor.phone).trim() : '';
+    const safeMobile = rawMobile.startsWith('+') ? `'${rawMobile}` : rawMobile;
+
     const rowData = [
       attemptId,
       timestamp,
       visitor.name || '',
       visitor.email || '',
-      visitor.phone || '',
+      safeMobile,
       score,
       maxScore,
       'Completed',
@@ -383,3 +386,49 @@ async function checkIfAttemptExistsInSheet(sheets: any, spreadsheetId: string, t
     return false;
   }
 }
+
+/**
+ * Reads all registered mobile numbers from Google Sheets (column E).
+ */
+export async function fetchExistingCompletedPhonesFromSheet(): Promise<string[]> {
+  const { serviceEmail, privateKey, sheetId, tabName, isConfigured } = getSheetsConfig();
+  if (!isConfigured) return [];
+
+  try {
+    const auth = new google.auth.JWT({
+      email: serviceEmail!,
+      key: privateKey,
+      scopes: ['https://www.googleapis.com/auth/spreadsheets']
+    });
+
+    const sheets = google.sheets({ version: 'v4', auth });
+    const tabsToSearch = [tabName];
+    if (tabName !== 'Sheet1') tabsToSearch.push('Sheet1');
+
+    const phones: string[] = [];
+    for (const searchTab of tabsToSearch) {
+      try {
+        const res = await sheets.spreadsheets.values.get({
+          spreadsheetId: sheetId!,
+          range: `${searchTab}!E:E`
+        });
+        const rows = res.data.values;
+        if (rows && rows.length > 1) {
+          for (let i = 1; i < rows.length; i++) {
+            const raw = rows[i]?.[0];
+            if (raw && typeof raw === 'string' && raw.trim() && !raw.startsWith('#')) {
+              phones.push(raw.trim().replace(/^'/, ''));
+            }
+          }
+        }
+      } catch (err: any) {
+        console.warn(`[Sheets Phone Query] Warning on tab "${searchTab}":`, err.message);
+      }
+    }
+    return phones;
+  } catch (error: any) {
+    console.error('[Sheets Phone Query Error]:', error.message);
+    return [];
+  }
+}
+

@@ -21,18 +21,18 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
   return (
     <div className="w-full flex-1 flex flex-col justify-between px-3.5 sm:px-4 py-2">
-      {/* Question Prompt */}
-      <div className="glass-card rounded-2xl p-3.5 sm:p-5 border border-cyan-500/20 shadow-card-dark mb-3 sm:mb-4">
-        <div className="text-[10px] sm:text-[11px] font-semibold tracking-wider uppercase text-cyan-400 mb-1 sm:mb-1.5">
+      {/* Accessible Question Prompt */}
+      <div className="glass-card rounded-2xl p-4 sm:p-5 border border-imtex-gold/30 shadow-card-dark mb-3 sm:mb-4 bg-imtex-card/85">
+        <div className="text-xs sm:text-sm font-bold tracking-wider uppercase text-imtex-gold mb-1.5">
           {question.section}
         </div>
-        <h2 className="text-sm sm:text-lg font-bold text-slate-100 leading-snug">
+        <h2 className="text-base sm:text-xl font-bold text-[#F5F5F5] leading-snug sm:leading-relaxed">
           {question.question}
         </h2>
       </div>
 
-      {/* 3 Options (Tap targets) */}
-      <div className="space-y-2.5 sm:space-y-3 flex-1 flex flex-col justify-center">
+      {/* 3 Options (Accessible Large Tap targets) */}
+      <div className="space-y-3 flex-1 flex flex-col justify-center" role="radiogroup" aria-label="Question options">
         {optionsList.map(({ key, label }) => {
           const isSelected = selectedOption === key;
 
@@ -40,35 +40,38 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             <button
               key={key}
               type="button"
+              role="radio"
+              aria-checked={isSelected}
               onClick={() => onSelectOption(key)}
-              className={`w-full min-h-[54px] sm:min-h-[60px] text-left p-3 sm:p-4 rounded-xl border transition-all duration-150 flex items-center space-x-3 sm:space-x-3.5 touch-press cursor-pointer ${
+              className={`w-full min-h-[58px] sm:min-h-[64px] text-left p-3.5 sm:p-4 rounded-xl border transition-all duration-150 flex items-center space-x-3.5 touch-press cursor-pointer ${
                 isSelected
-                  ? 'bg-gradient-to-r from-cyan-950/80 to-blue-950/80 border-cyan-400 shadow-glow-cyan text-white'
-                  : 'bg-slate-900/60 hover:bg-slate-850 active:bg-slate-800 border-slate-700/80 hover:border-slate-500 text-slate-200'
+                  ? 'bg-imtex-gold border-2 border-imtex-gold shadow-glow-gold text-[#202B2E]'
+                  : 'bg-imtex-card/80 hover:bg-imtex-cardHover active:bg-imtex-dark border-imtex-gold/25 hover:border-imtex-gold/50 text-[#F5F5F5]'
               }`}
             >
               {/* Option Key Badge */}
               <div
-                className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center font-bold text-xs sm:text-sm shrink-0 transition-all ${
+                className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center font-black text-sm sm:text-base shrink-0 transition-all ${
                   isSelected
-                    ? 'bg-cyan-400 text-slate-950 font-black shadow-md'
-                    : 'bg-slate-800 text-slate-400 border border-slate-700'
+                    ? 'bg-[#202B2E] text-imtex-gold shadow-sm'
+                    : 'bg-imtex-dark text-[#D9E0E1] border border-imtex-gold/30'
                 }`}
+                aria-hidden="true"
               >
                 {key}
               </div>
 
-              {/* Option Text */}
-              <div className="flex-1 text-xs sm:text-base font-medium leading-snug">
+              {/* Option Text with Accessible Sizing */}
+              <div className={`flex-1 text-sm sm:text-base md:text-lg leading-relaxed ${isSelected ? 'font-bold text-[#202B2E]' : 'font-medium text-[#F5F5F5]'}`}>
                 {label}
               </div>
 
               {/* Radio Indicator */}
-              <div className="shrink-0 text-cyan-400">
+              <div className="shrink-0" aria-hidden="true">
                 {isSelected ? (
-                  <CheckCircle2 className="w-5 h-5 fill-cyan-400 text-slate-950" />
+                  <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 fill-[#202B2E] text-imtex-gold" />
                 ) : (
-                  <Circle className="w-5 h-5 text-slate-600" />
+                  <Circle className="w-5 h-5 sm:w-6 sm:h-6 text-[#D9E0E1]/40" />
                 )}
               </div>
             </button>

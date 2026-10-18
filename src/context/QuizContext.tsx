@@ -91,7 +91,7 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     try {
-      const { attemptId: newAttemptId, questions: qList } = await ApiService.fetchQuestions();
+      const { attemptId: newAttemptId, questions: qList } = await ApiService.fetchQuestions(leadData.phone, leadData.name);
       if (qList.length !== 10) {
         throw new Error(`Expected exactly 10 questions, received ${qList.length}`);
       }

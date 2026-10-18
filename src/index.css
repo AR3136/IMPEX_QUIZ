@@ -8,17 +8,30 @@
     --sab: env(safe-area-inset-bottom, 0px);
     --sal: env(safe-area-inset-left, 0px);
     --sar: env(safe-area-inset-right, 0px);
+
+    /* IMTEX Theme Palette */
+    --color-imtex-teal: #142629;
+    --color-imtex-text: #F5F5F5;
+    --color-imtex-gold: #E9C66F;
+    --color-imtex-muted: #D9E0E1;
+    --color-imtex-white: #FFFFFF;
+    --color-imtex-charcoal: #202B2E;
+    --color-imtex-border: #E9C66F;
   }
 
   html {
+    font-size: 16px;
     -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
     touch-action: manipulation;
   }
 
   body {
-    background-color: #0A1128;
-    color: #F8FAFC;
+    background-color: #142629;
+    color: #F5F5F5;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 1rem;
+    line-height: 1.5;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
     -webkit-user-select: none;
@@ -45,29 +58,34 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0A1128;
+  background: #142629;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1E293B;
+  background: #1E3B40;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #00E5FF;
+  background: #E9C66F;
 }
 
-/* Glassmorphism utility */
+/* Glassmorphism utilities tailored to the Deep Dark Teal & Warm Gold theme */
 .glass-panel {
-  background: rgba(16, 31, 66, 0.75);
+  background: rgba(24, 47, 51, 0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(0, 229, 255, 0.15);
+  border: 1px solid rgba(233, 198, 111, 0.28);
 }
 
 .glass-card {
-  background: rgba(16, 31, 66, 0.6);
+  background: rgba(24, 47, 51, 0.72);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(233, 198, 111, 0.2);
+}
+
+.gold-divider {
+  height: 1px;
+  background-color: rgba(233, 198, 111, 0.35);
 }
 
 /* Touch active tactile feedback */

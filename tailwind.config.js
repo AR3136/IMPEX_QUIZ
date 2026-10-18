@@ -8,19 +8,26 @@ export default {
     extend: {
       colors: {
         imtex: {
-          dark: '#0A1128',
-          card: '#101F42',
-          cardHover: '#162854',
-          navy: '#001F54',
-          accent: '#00E5FF',
-          accentHover: '#00B4D8',
-          amber: '#FF9100',
-          amberHover: '#FF6D00',
-          success: '#00E676',
-          error: '#FF5252',
-          border: 'rgba(0, 229, 255, 0.15)',
-          muted: '#94A3B8',
-          light: '#F8FAFC'
+          teal: '#142629',
+          dark: '#142629',
+          card: '#182F33',
+          cardHover: '#1E3B40',
+          cardDark: '#101F22',
+          gold: '#E9C66F',
+          goldHover: '#DFBA5F',
+          goldLight: '#F5E4B3',
+          accent: '#E9C66F',
+          accentHover: '#DFBA5F',
+          textWhite: '#F5F5F5',
+          textMuted: '#D9E0E1',
+          charcoal: '#202B2E',
+          darkText: '#202B2E',
+          white: '#FFFFFF',
+          border: 'rgba(233, 198, 111, 0.3)',
+          borderSolid: '#E9C66F',
+          success: '#10B981',
+          error: '#EF4444',
+          warning: '#F59E0B',
         }
       },
       fontFamily: {
@@ -28,9 +35,10 @@ export default {
         mono: ['JetBrains Mono', 'monospace']
       },
       boxShadow: {
-        'glow-cyan': '0 0 25px -4px rgba(0, 229, 255, 0.45)',
-        'glow-amber': '0 0 25px -4px rgba(255, 145, 0, 0.45)',
-        'card-dark': '0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.05)'
+        'glow-gold': '0 0 25px -4px rgba(233, 198, 111, 0.45)',
+        'glow-gold-sm': '0 0 12px -2px rgba(233, 198, 111, 0.35)',
+        'card-dark': '0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(233, 198, 111, 0.15)',
+        'card-gold': '0 10px 30px -5px rgba(20, 38, 41, 0.6), 0 0 0 1px rgba(233, 198, 111, 0.3)'
       }
     },
   },

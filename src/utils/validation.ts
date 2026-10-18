@@ -1,3 +1,5 @@
+import { normalizePhoneNumber } from './phone';
+
 export interface ValidationResult {
   isValid: boolean;
   errors: Record<string, string>;
@@ -5,13 +7,13 @@ export interface ValidationResult {
 
 export interface RegistrationFormData {
   name: string;
-  email: string;
   phone: string;
+  email?: string;
   company?: string;
   designation?: string;
   city?: string;
   visitorType?: string;
-  consent: boolean;
+  consent?: boolean;
 }
 
 /**
@@ -35,13 +37,13 @@ export function validateName(name: string): string | null {
 }
 
 /**
- * Validate email address format.
+ * Validate email address format (if provided).
  */
-export function validateEmail(email: string): string | null {
-  const trimmed = email.trim();
-  if (!trimmed) {
-    return 'Email address is required';
+export function validateEmail(email?: string): string | null {
+  if (!email || !email.trim()) {
+    return null; // Email is optional per simplified registration requirements
   }
+  const trimmed = email.trim();
   const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
   if (!emailRegex.test(trimmed)) {
     return 'Please enter a valid email address (e.g. name@company.com)';
@@ -50,40 +52,19 @@ export function validateEmail(email: string): string | null {
 }
 
 /**
- * Validate mobile number:
- * - Supports standard 10-digit Indian numbers (starting with 6-9)
- * - Supports Indian numbers with country code: +91, 091, 91
- * - Supports international numbers with country codes: e.g. +1, +44, +49, +81, +971 etc.
+ * Validate mobile number using canonical normalizer.
  */
 export function validatePhone(phone: string): string | null {
-  const trimmed = phone.trim();
-  if (!trimmed) {
-    return 'Mobile number is required';
+  const norm = normalizePhoneNumber(phone);
+  if (!norm.isValid) {
+    return norm.error || 'Please enter a valid 10-digit mobile number';
   }
-
-  // Strip common separators (spaces, hyphens, brackets)
-  const cleanPhone = trimmed.replace(/[\s\-()]/g, '');
-
-  // 1. Standard 10-digit Indian Mobile: starts with 6, 7, 8, 9
-  if (/^[6-9]\d{9}$/.test(cleanPhone)) {
-    return null;
-  }
-
-  // 2. Indian Mobile with +91 or 0 prefix: +919876543210, 09876543210
-  if (/^(\+?91|0)[6-9]\d{9}$/.test(cleanPhone)) {
-    return null;
-  }
-
-  // 3. International Mobile: starts with '+' followed by 1-4 digit country code and 7-12 digits
-  if (/^\+\d{1,4}\d{7,12}$/.test(cleanPhone)) {
-    return null;
-  }
-
-  return 'Enter a valid 10-digit mobile number (or with country code, e.g. +91 98765 43210)';
+  return null;
 }
 
 /**
- * Validate registration form data.
+ * Validate minimal registration form data (Name and Phone).
+ * Consent checkbox and extra fields are eliminated per requirements.
  */
 export function validateRegistrationForm(data: RegistrationFormData): ValidationResult {
   const errors: Record<string, string> = {};
@@ -91,14 +72,12 @@ export function validateRegistrationForm(data: RegistrationFormData): Validation
   const nameError = validateName(data.name);
   if (nameError) errors.name = nameError;
 
-  const emailError = validateEmail(data.email);
-  if (emailError) errors.email = emailError;
-
   const phoneError = validatePhone(data.phone);
   if (phoneError) errors.phone = phoneError;
 
-  if (!data.consent) {
-    errors.consent = 'Please accept the privacy consent to participate in the quiz';
+  if (data.email) {
+    const emailError = validateEmail(data.email);
+    if (emailError) errors.email = emailError;
   }
 
   return {
@@ -109,7 +88,7 @@ export function validateRegistrationForm(data: RegistrationFormData): Validation
 
 /**
  * Generate a unique exhibition submission ID.
- * Format: IMTEX-YYYYMMDD-XXXX (e.g. IMTEX-20261017-K9F2)
+ * Format: IMTEX-YYYYMMDD-XXXX (e.g. IMTEX-20261018-K9F2)
  */
 export function generateSubmissionId(): string {
   const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');

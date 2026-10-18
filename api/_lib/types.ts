@@ -17,14 +17,14 @@ export type ClientQuestion = Omit<Question, 'correctAnswer'>;
 export interface VisitorLead {
   submissionId: string;
   name: string;
-  email: string;
   phone: string;
+  email?: string;
   company?: string;
   designation?: string;
   city?: string;
   visitorType?: string;
-  consent: boolean;
-  registeredAt: string;
+  consent?: boolean;
+  registeredAt?: string;
 }
 
 export interface QuizAttemptInfo {
@@ -43,11 +43,12 @@ export interface QuizSubmission {
 export interface SubmissionResponse {
   success: boolean;
   attemptId: string;
+  score?: number;
+  maxScore?: number;
   message: string;
   boothMessage: string;
-  sheetsSync: {
-    success: boolean;
-    mode: string;
-    message: string;
-  };
+  isRetry?: boolean;
+  confirmedAt?: string;
+  alreadyCompleted?: boolean;
+  error?: string;
 }

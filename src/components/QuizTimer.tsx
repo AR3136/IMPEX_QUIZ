@@ -11,8 +11,8 @@ export const QuizTimer: React.FC<QuizTimerProps> = ({ seconds }) => {
   const formatted = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 
   return (
-    <div className="flex items-center space-x-1.5 bg-slate-900/80 border border-slate-700/70 px-2.5 py-1 rounded-full text-xs font-mono font-medium text-cyan-300">
-      <Clock className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+    <div className="flex items-center space-x-1.5 bg-imtex-card/90 border border-imtex-gold/40 px-3 py-1 rounded-full text-xs sm:text-sm font-mono font-bold text-imtex-gold shadow-sm">
+      <Clock className="w-4 h-4 text-imtex-gold animate-pulse" aria-hidden="true" />
       <span>{formatted}</span>
     </div>
   );

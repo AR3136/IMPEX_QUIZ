@@ -561,8 +561,15 @@ export const MASTER_QUESTION_BANK: Question[] = [
 ];
 
 // Track active and completed quiz attempts to prevent duplicate submissions
-const activeAttempts = new Map<string, { questionIds: number[]; createdAt: number }>();
-const completedAttempts = new Set<string>();
+export interface CompletedAttemptRecord {
+  score: number;
+  maxScore: 10;
+  phone?: string;
+  completedAt: string;
+}
+
+const activeAttempts = new Map<string, { questionIds: number[]; createdAt: number; phone?: string }>();
+const completedAttempts = new Map<string, CompletedAttemptRecord>();
 
 /**
  * Fisher-Yates array shuffle.
@@ -585,7 +592,7 @@ function shuffleArray<T>(arr: T[]): T[] {
  * 5. Exactly 3 selectable options per question.
  * 6. Strips correctAnswer so frontend never receives answers.
  */
-export function generateRandomQuizAttempt(): QuizAttemptInfo {
+export function generateRandomQuizAttempt(normalizedPhone?: string): QuizAttemptInfo {
   const bySection = new Map<string, Question[]>();
   for (const q of MASTER_QUESTION_BANK) {
     const sec = q.section;
@@ -621,10 +628,11 @@ export function generateRandomQuizAttempt(): QuizAttemptInfo {
   const randomSuffix = Math.random().toString(36).substring(2, 8).toUpperCase();
   const attemptId = `ATTEMPT-${dateStr}-${randomSuffix}`;
 
-  // Store in active registry
+  // Store in active registry with associated phone
   activeAttempts.set(attemptId, {
     questionIds: randomizedQuestions.map(q => q.id),
-    createdAt: Date.now()
+    createdAt: Date.now(),
+    phone: normalizedPhone
   });
 
   // Strip correctAnswer for public client transmission
@@ -643,6 +651,10 @@ export function isAttemptAlreadyCompleted(attemptId: string): boolean {
   return completedAttempts.has(attemptId);
 }
 
+export function getCompletedAttemptData(attemptId: string): CompletedAttemptRecord | undefined {
+  return completedAttempts.get(attemptId);
+}
+
 /**
  * Authoritative server-side grading and duplicate prevention.
  * Throws an error if the attempt has already been submitted.
@@ -654,9 +666,11 @@ export function gradeAndFinalizeAttempt(
 ): { score: number; maxScore: 10 } {
   // 1. Guard against duplicate submissions
   if (completedAttempts.has(attemptId)) {
-    const err = new Error(`Duplicate submission: Quiz attempt ${attemptId} has already been submitted.`);
-    (err as any).statusCode = 409;
-    throw err;
+    const cached = completedAttempts.get(attemptId)!;
+    return {
+      score: cached.score,
+      maxScore: cached.maxScore
+    };
   }
 
   // Lookup question map
@@ -701,7 +715,12 @@ export function gradeAndFinalizeAttempt(
   score = Math.max(0, Math.min(10, score));
 
   // Mark attempt as completed to permanently block duplicate submissions
-  completedAttempts.add(attemptId);
+  completedAttempts.set(attemptId, {
+    score,
+    maxScore: 10,
+    phone: attemptData?.phone,
+    completedAt: new Date().toISOString()
+  });
   activeAttempts.delete(attemptId);
 
   return {
