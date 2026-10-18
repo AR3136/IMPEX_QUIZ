@@ -14,6 +14,7 @@ import {
   EyeOff,
   Award
 } from 'lucide-react';
+import { normalizePhoneNumber } from '../utils/phone';
 
 /**
  * Authoritative score feedback messages required by IMTEX specification:
@@ -230,7 +231,9 @@ export const ThankYouPage: React.FC = () => {
           </div>
           <div>
             <span className="text-xs text-slate-500 block mb-0.5">Mobile:</span>
-            <span className="font-mono text-[#202B2E] font-bold truncate block text-sm sm:text-base">{visitor?.phone || 'Verified'}</span>
+            <span className="font-mono text-[#202B2E] font-bold truncate block text-sm sm:text-base">
+              {visitor?.phone ? (normalizePhoneNumber(visitor.phone).formatted || visitor.phone) : 'Verified'}
+            </span>
           </div>
           <div>
             <span className="text-xs text-slate-500 block mb-0.5">Time Spent:</span>

@@ -1,4 +1,5 @@
 import { normalizePhoneNumber } from './phone';
+import { CountryCode } from 'libphonenumber-js';
 
 export interface ValidationResult {
   isValid: boolean;
@@ -8,6 +9,7 @@ export interface ValidationResult {
 export interface RegistrationFormData {
   name: string;
   phone: string;
+  country?: CountryCode;
   email?: string;
   company?: string;
   designation?: string;
@@ -52,12 +54,12 @@ export function validateEmail(email?: string): string | null {
 }
 
 /**
- * Validate mobile number using canonical normalizer.
+ * Validate mobile number using canonical normalizer and selected country rules.
  */
-export function validatePhone(phone: string): string | null {
-  const norm = normalizePhoneNumber(phone);
+export function validatePhone(phone: string, country: CountryCode = 'IN'): string | null {
+  const norm = normalizePhoneNumber(phone, country);
   if (!norm.isValid) {
-    return norm.error || 'Please enter a valid 10-digit mobile number';
+    return norm.error || 'Please enter a valid mobile number';
   }
   return null;
 }

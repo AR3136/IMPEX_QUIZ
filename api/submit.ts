@@ -81,11 +81,12 @@ export default async function handler(req: any, res: any) {
     }
 
     // Authoritative Phone Validation and Normalization
-    const phoneNorm = normalizePhoneNumber(visitor.phone);
+    const rawCountry = ((visitor as any)?.country || (body as any)?.country || 'IN') as any;
+    const phoneNorm = normalizePhoneNumber(visitor.phone, rawCountry);
     if (!phoneNorm.isValid || !phoneNorm.normalized) {
       res.statusCode = 400;
       res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({ error: phoneNorm.error || 'Please enter a valid 10-digit mobile number.' }));
+      res.end(JSON.stringify({ error: phoneNorm.error || 'Please enter a valid mobile number.' }));
       return;
     }
     const normalizedPhone = phoneNorm.normalized;
@@ -126,7 +127,7 @@ export default async function handler(req: any, res: any) {
       res.end(JSON.stringify({
         success: false,
         alreadyCompleted: true,
-        error: 'This mobile number has already completed the IMTEX Quiz Challenge. Only one attempt per participant is allowed.'
+        error: 'This mobile number has already been used to complete the quiz. Only one attempt is allowed per mobile number.'
       }));
       return;
     }

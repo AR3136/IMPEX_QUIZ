@@ -18,6 +18,7 @@ export interface VisitorLead {
   submissionId: string;
   name: string;
   phone: string;
+  country?: string;
   email?: string;
   company?: string;
   designation?: string;

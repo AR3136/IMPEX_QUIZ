@@ -14,6 +14,7 @@ export interface ClientQuestion {
 export interface VisitorLead {
   name: string;
   phone: string;
+  country?: string;
   email?: string;
   submissionId?: string;
   company?: string;

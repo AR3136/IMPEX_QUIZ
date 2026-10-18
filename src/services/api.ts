@@ -8,12 +8,13 @@ export class ApiService {
    * Sends the visitor's mobile number so the server can perform an authoritative
    * pre-flight duplicate check before generating an attempt.
    */
-  static async fetchQuestions(phone?: string, name?: string): Promise<{ attemptId: string; questions: ClientQuestion[] }> {
+  static async fetchQuestions(phone?: string, name?: string, country?: string): Promise<{ attemptId: string; questions: ClientQuestion[] }> {
     try {
       let url = `${this.baseUrl}/api/questions`;
       if (phone) {
         const params = new URLSearchParams({ phone: phone.trim() });
         if (name) params.set('name', name.trim());
+        if (country) params.set('country', country.trim());
         url += `?${params.toString()}`;
       }
 

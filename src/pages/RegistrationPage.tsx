@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { CountryCode } from 'libphonenumber-js';
 import { useQuiz } from '../context/QuizContext';
 import { validateName, validatePhone } from '../utils/validation';
+import { normalizePhoneNumber } from '../utils/phone';
+import { PhoneInput } from '../components/PhoneInput';
 import {
   User,
   Phone,
@@ -15,6 +18,8 @@ export const RegistrationPage: React.FC = () => {
   // Minimal form state: Full Name & Mobile Number (Unique Entry ID)
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [country, setCountry] = useState<CountryCode>('IN');
+  const [normalizedE164, setNormalizedE164] = useState('');
 
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -34,10 +39,26 @@ export const RegistrationPage: React.FC = () => {
     }
   };
 
-  const handlePhoneChange = (val: string) => {
-    setPhone(val);
+  const handlePhoneChange = (nationalNumber: string, fullE164: string, newCountry: CountryCode) => {
+    setPhone(nationalNumber);
+    setNormalizedE164(fullE164);
+    setCountry(newCountry);
+
     if (touched.phone) {
-      const err = validatePhone(val);
+      const err = validatePhone(nationalNumber, newCountry);
+      setValidationErrors(prev => {
+        const next = { ...prev };
+        if (err) next.phone = err;
+        else delete next.phone;
+        return next;
+      });
+    }
+  };
+
+  const handleCountryChange = (newCountry: CountryCode) => {
+    setCountry(newCountry);
+    if (touched.phone) {
+      const err = validatePhone(phone, newCountry);
       setValidationErrors(prev => {
         const next = { ...prev };
         if (err) next.phone = err;
@@ -51,7 +72,7 @@ export const RegistrationPage: React.FC = () => {
     setTouched(prev => ({ ...prev, [field]: true }));
     let err: string | null = null;
     if (field === 'name') err = validateName(name);
-    if (field === 'phone') err = validatePhone(phone);
+    if (field === 'phone') err = validatePhone(phone, country);
 
     setValidationErrors(prev => {
       const next = { ...prev };
@@ -70,7 +91,7 @@ export const RegistrationPage: React.FC = () => {
     setTouched({ name: true, phone: true });
 
     const nameErr = validateName(name);
-    const phoneErr = validatePhone(phone);
+    const phoneErr = validatePhone(phone, country);
 
     if (nameErr || phoneErr) {
       const errors: Record<string, string> = {};
@@ -82,9 +103,13 @@ export const RegistrationPage: React.FC = () => {
 
     try {
       setIsSubmittingLocal(true);
+      const phoneNorm = normalizePhoneNumber(phone, country);
+      const canonicalPhone = phoneNorm.isValid ? phoneNorm.normalized : normalizedE164 || phone.trim();
+
       await startQuiz({
         name: name.trim(),
-        phone: phone.trim(),
+        phone: canonicalPhone,
+        country
       });
     } catch {
       // Server error is handled via QuizContext and displayed in the alert below
@@ -181,24 +206,16 @@ export const RegistrationPage: React.FC = () => {
             <span className="text-xs text-[#D9E0E1]">Unique Quiz Entry ID</span>
           </div>
 
-          <input
+          <PhoneInput
             id="reg-phone"
-            type="tel"
-            inputMode="tel"
-            required
-            autoComplete="tel"
-            placeholder="e.g. 98765 43210 or +91..."
             value={phone}
-            onChange={e => handlePhoneChange(e.target.value)}
+            country={country}
+            onChange={handlePhoneChange}
+            onCountryChange={handleCountryChange}
             onBlur={() => handleBlur('phone')}
             disabled={isFormBusy}
-            aria-invalid={Boolean(validationErrors.phone)}
-            aria-describedby={validationErrors.phone ? 'reg-phone-error' : 'reg-phone-hint'}
-            className={`w-full min-h-[50px] px-4 py-3 rounded-xl border bg-white text-[#202B2E] placeholder-slate-400 focus:outline-none transition-all text-base font-mono ${
-              validationErrors.phone
-                ? 'border-red-500 focus:ring-2 focus:ring-red-400/50'
-                : 'border-slate-300 focus:border-imtex-gold focus:ring-2 focus:ring-imtex-gold/40'
-            }`}
+            hasError={Boolean(validationErrors.phone)}
+            ariaDescribedBy={validationErrors.phone ? 'reg-phone-error' : 'reg-phone-hint'}
           />
 
           {validationErrors.phone ? (

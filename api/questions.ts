@@ -21,9 +21,10 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    // 1. Extract phone from query params (GET) or parsed JSON body (POST)
+    // 1. Extract phone and country from query params (GET) or parsed JSON body (POST)
     let rawPhone = req.query?.phone;
     let rawName = req.query?.name;
+    let rawCountry = (req.query?.country || req.query?.countryCode || 'IN') as any;
 
     if (req.method === 'POST') {
       let body = req.body;
@@ -41,36 +42,38 @@ export default async function handler(req: any, res: any) {
       if (body) {
         rawPhone = rawPhone || body.phone || body.mobile;
         rawName = rawName || body.name;
+        rawCountry = body.country || body.countryCode || rawCountry || 'IN';
       }
     }
 
     // 2. Authoritative Phone Validation & Duplicate Check
     let normalizedPhone: string | undefined = undefined;
     if (rawPhone) {
-      const phoneCheck = await isPhoneAlreadyCompleted(String(rawPhone));
-      if (!phoneCheck.isValid) {
+      const phoneNorm = normalizePhoneNumber(String(rawPhone), rawCountry);
+      if (!phoneNorm.isValid || !phoneNorm.normalized) {
         res.statusCode = 400;
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify({
           success: false,
-          error: phoneCheck.error || 'Please enter a valid 10-digit mobile number.'
+          error: phoneNorm.error || 'Please enter a valid mobile number.'
         }));
         return;
       }
 
+      normalizedPhone = phoneNorm.normalized;
+
+      const phoneCheck = await isPhoneAlreadyCompleted(normalizedPhone);
       if (phoneCheck.completed) {
-        // Requirement 3: Polite message explaining that only one attempt per mobile number is allowed
+        // Requirement 3: Exact message explaining that only one attempt per mobile number is allowed
         res.statusCode = 409;
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify({
           success: false,
           alreadyCompleted: true,
-          error: 'This mobile number has already completed the IMTEX Quiz Challenge. Only one attempt per participant is allowed.'
+          error: 'This mobile number has already been used to complete the quiz. Only one attempt is allowed per mobile number.'
         }));
         return;
       }
-
-      normalizedPhone = phoneCheck.normalized;
     }
 
     // 3. Generate 10 randomized quiz questions (2 from each of the 5 sections, answer key stripped)

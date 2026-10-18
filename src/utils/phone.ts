@@ -1,23 +1,38 @@
+import { parsePhoneNumberFromString, CountryCode } from 'libphonenumber-js';
+export type { CountryCode };
+
 export interface PhoneValidationResult {
   isValid: boolean;
   normalized: string;
+  formatted?: string;
+  nationalNumber?: string;
+  country?: CountryCode;
+  countryCallingCode?: string;
   error?: string;
 }
 
+const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+
+export function getCountryName(countryCode: string): string {
+  try {
+    return regionNames.of(countryCode) || countryCode;
+  } catch {
+    return countryCode;
+  }
+}
+
 /**
- * Client-side phone normalizer and validator matching server rules.
+ * Authoritative client-side phone normalizer and validator matching server rules.
  * 
  * Supports:
- * - Standard 10-digit Indian mobile numbers (starts with 6, 7, 8, 9)
- * - Indian mobile numbers with prefixes (+91, 91, 0)
- * - Formatted numbers with spaces, dashes, parentheses
- * - International E.164 numbers (+ followed by country code and 7-14 digits)
- * 
- * Returns canonical E.164 format:
- * - India: +91XXXXXXXXXX
- * - International: +[country_code][digits]
+ * - India (+91) with standard 10-digit mobile numbers, +91 prefix, 91 prefix, or leading 0.
+ * - International numbers for all 245 countries using their national numbering plans.
+ * - Normalizes to canonical E.164 format (+[countryCode][nationalNumber]) for safe storage and duplicate checks.
  */
-export function normalizePhoneNumber(rawPhone: string): PhoneValidationResult {
+export function normalizePhoneNumber(
+  rawPhone: string,
+  defaultCountry: CountryCode = 'IN'
+): PhoneValidationResult {
   if (!rawPhone || typeof rawPhone !== 'string') {
     return {
       isValid: false,
@@ -35,37 +50,42 @@ export function normalizePhoneNumber(rawPhone: string): PhoneValidationResult {
     };
   }
 
-  // Strip common formatting symbols: spaces, hyphens, brackets, dots
-  const cleaned = trimmed.replace(/[\s\-\(\)\.]+/g, '');
+  try {
+    const phoneNumber = parsePhoneNumberFromString(trimmed, defaultCountry);
 
-  // 1. Indian number with +91 prefix: +91[6-9]XXXXXXXXX (13 chars)
-  if (/^\+91[6-9]\d{9}$/.test(cleaned)) {
-    return { isValid: true, normalized: cleaned };
+    if (!phoneNumber) {
+      const countryName = getCountryName(defaultCountry);
+      return {
+        isValid: false,
+        normalized: '',
+        error: `Please enter a valid mobile number for ${countryName}.`
+      };
+    }
+
+    if (!phoneNumber.isValid()) {
+      const detectedCountry = phoneNumber.country || defaultCountry;
+      const countryName = getCountryName(detectedCountry);
+      const callingCode = phoneNumber.countryCallingCode ? ` (+${phoneNumber.countryCallingCode})` : '';
+      return {
+        isValid: false,
+        normalized: '',
+        error: `Please enter a valid mobile number for ${countryName}${callingCode}.`
+      };
+    }
+
+    return {
+      isValid: true,
+      normalized: phoneNumber.format('E.164'),
+      formatted: phoneNumber.formatInternational(),
+      nationalNumber: phoneNumber.nationalNumber,
+      country: phoneNumber.country,
+      countryCallingCode: `+${phoneNumber.countryCallingCode}`
+    };
+  } catch {
+    return {
+      isValid: false,
+      normalized: '',
+      error: 'Invalid phone number format.'
+    };
   }
-
-  // 2. Indian number with 91 prefix without '+': 91[6-9]XXXXXXXXX (12 digits)
-  if (/^91[6-9]\d{9}$/.test(cleaned)) {
-    return { isValid: true, normalized: `+${cleaned}` };
-  }
-
-  // 3. Indian number with leading 0: 0[6-9]XXXXXXXXX (11 digits)
-  if (/^0[6-9]\d{9}$/.test(cleaned)) {
-    return { isValid: true, normalized: `+91${cleaned.slice(1)}` };
-  }
-
-  // 4. Standard 10-digit Indian mobile: [6-9]XXXXXXXXX (10 digits)
-  if (/^[6-9]\d{9}$/.test(cleaned)) {
-    return { isValid: true, normalized: `+91${cleaned}` };
-  }
-
-  // 5. Valid International E.164 number: starts with + and 8-15 digits
-  if (/^\+[1-9]\d{7,14}$/.test(cleaned)) {
-    return { isValid: true, normalized: cleaned };
-  }
-
-  return {
-    isValid: false,
-    normalized: '',
-    error: 'Please enter a valid 10-digit mobile number (e.g. 98765 43210).'
-  };
 }

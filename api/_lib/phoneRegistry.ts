@@ -1,4 +1,4 @@
-import { normalizePhoneNumber } from './phone.js';
+import { normalizePhoneNumber, type CountryCode } from './phone.js';
 import { fetchExistingCompletedPhonesFromSheet } from './sheetsClient.js';
 
 /**
@@ -61,13 +61,16 @@ export async function syncCompletedPhonesFromSheets(): Promise<void> {
  * Checks whether a mobile number has already completed a quiz submission.
  * Validates and normalizes the number, checks in-memory cache, and verifies against Google Sheets.
  */
-export async function isPhoneAlreadyCompleted(rawPhone: string): Promise<{
+export async function isPhoneAlreadyCompleted(
+  rawPhone: string,
+  defaultCountry: CountryCode = 'IN'
+): Promise<{
   completed: boolean;
   normalized: string;
   isValid: boolean;
   error?: string;
 }> {
-  const val = normalizePhoneNumber(rawPhone);
+  const val = normalizePhoneNumber(rawPhone, defaultCountry);
   if (!val.isValid || !val.normalized) {
     return {
       completed: false,
@@ -120,7 +123,7 @@ export function acquirePhoneSubmissionLock(normalizedPhone: string): {
     return {
       acquired: false,
       reason: 'completed',
-      message: 'This mobile number has already completed the IMTEX Quiz Challenge. Only one attempt per participant is allowed.'
+      message: 'This mobile number has already been used to complete the quiz. Only one attempt is allowed per mobile number.'
     };
   }
 
