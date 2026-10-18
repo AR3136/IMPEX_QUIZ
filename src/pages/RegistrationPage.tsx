@@ -6,7 +6,6 @@ import {
   Phone,
   ArrowRight,
   Sparkles,
-  ShieldCheck,
   AlertCircle
 } from 'lucide-react';
 
@@ -212,15 +211,6 @@ export const RegistrationPage: React.FC = () => {
               1 attempt per mobile number. Used to claim your gift hamper at Booth A161 (Hall 4).
             </p>
           )}
-        </div>
-
-        {/* --- CONCISE ACCESSIBLE PRIVACY NOTICE (No mandatory checkbox) --- */}
-        <div className="p-3 rounded-xl bg-imtex-dark/85 border border-imtex-gold/30 flex items-start space-x-2.5 text-xs sm:text-sm text-[#D9E0E1] leading-relaxed">
-          <ShieldCheck className="w-4 sm:w-5 h-4 sm:h-5 text-imtex-gold shrink-0 mt-0.5" aria-hidden="true" />
-          <div>
-            <strong className="text-[#F5F5F5] font-semibold">Privacy Notice: </strong>
-            Your name and mobile number are collected solely for administering your exhibition quiz participation and verifying your gift hamper claim at Booth A161 (Hall 4). Your data is protected and never shared or sold.
-          </div>
         </div>
 
         {/* --- START CHALLENGE ACTION BUTTON (Golden yellow with dark text) --- */}

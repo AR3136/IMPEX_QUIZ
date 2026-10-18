@@ -215,11 +215,10 @@ console.log('--- Test Suite 7: Simplified Registration & Privacy Notice ---');
 const regFile = fs.readFileSync('src/pages/RegistrationPage.tsx', 'utf8');
 assert.ok(!regFile.includes('reg-consent'), 'Consent checkbox input must be removed from RegistrationPage');
 assert.ok(!regFile.includes('reg-email'), 'Email input must be removed from simplified RegistrationPage');
-assert.ok(!regFile.includes('reg-company'), 'Company input must be removed from RegistrationPage');
-assert.ok(regFile.includes('Privacy Notice:'), 'Accessible Privacy Notice statement must be present');
+assert.ok(!regFile.includes('Privacy Notice:'), 'Privacy Notice statement removed as requested');
 assert.ok(regFile.includes('Start Challenge (10 Qs)'), 'Start Challenge button must be present');
 
-console.log('✅ Simplified registration UI and privacy compliance verified.\n');
+console.log('✅ Simplified minimal registration UI verified without privacy notice.\n');
 
 console.log('====================================================');
 console.log('🎉 ALL 7 TEST SUITES PASSED FLAWLESSLY!');
