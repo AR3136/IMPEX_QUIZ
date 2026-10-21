@@ -137,9 +137,9 @@ export async function appendQuizRecordToSheets(params: AppendQuizRecordParams): 
       ''    // Empty collection timestamp
     ];
 
-    // Dual-write: write to configured tab (e.g. Responses) AND Sheet1 so users see data regardless of active tab
+    // Write to configured tab (e.g. Responses) as single source of truth
     const tabsToWrite = [tabName];
-    if (tabName !== 'Sheet1') tabsToWrite.push('Sheet1');
+
 
     let primaryWriteConfirmed = false;
 
@@ -198,7 +198,7 @@ export async function lookupParticipantBySubmissionId(submissionId: string): Pro
 
     const sheets = google.sheets({ version: 'v4', auth });
     const tabsToSearch = [tabName];
-    if (tabName !== 'Sheet1') tabsToSearch.push('Sheet1');
+
 
     for (const searchTab of tabsToSearch) {
       try {
@@ -286,7 +286,7 @@ export async function markGoodiesCollectedInSheets(submissionId: string): Promis
 
     // Update both configured tab and Sheet1
     const tabsToUpdate = [tabName];
-    if (tabName !== 'Sheet1') tabsToUpdate.push('Sheet1');
+
 
     for (const targetTab of tabsToUpdate) {
       try {
@@ -403,7 +403,7 @@ export async function fetchExistingCompletedPhonesFromSheet(): Promise<string[]>
 
     const sheets = google.sheets({ version: 'v4', auth });
     const tabsToSearch = [tabName];
-    if (tabName !== 'Sheet1') tabsToSearch.push('Sheet1');
+
 
     const phones: string[] = [];
     for (const searchTab of tabsToSearch) {

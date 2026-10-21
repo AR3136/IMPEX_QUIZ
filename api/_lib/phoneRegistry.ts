@@ -8,15 +8,17 @@ import { fetchExistingCompletedPhonesFromSheet } from './sheetsClient.js';
  * 1. Exactly ONE completed quiz submission per normalized mobile number.
  * 2. Pre-flight check before issuing questions to start a quiz.
  * 3. Atomic check-and-lock before grading and saving final submission.
- * 4. Google Sheets is synchronized on startup / cache miss.
+ * 4. Google Sheets is the authoritative source of truth.
+ * 5. Dynamic synchronization ensures that if booth staff manually delete an
+ *    entry from Google Sheets, that mobile number is immediately unblocked
+ *    and permitted to re-attempt the quiz.
  * 
  * Architecture Note on Concurrency:
  * - In-memory Mutex: The `inFlightPhoneLocks` map provides synchronous atomic
  *   locking against double-clicks and concurrent requests within the Node.js event loop.
- * - Persistent Store: Existing phone numbers from Google Sheets are cached in `completedPhonesSet`.
- * - Recommended Enterprise Extension: For multi-region serverless clusters with dozens
- *   of concurrent worker instances, an external atomic data store with atomic `SET NX`
- *   (e.g., Upstash Redis, Redis Cloud, or PostgreSQL unique constraint) should be configured.
+ * - Live Google Sheets Sync: The active set of completed phones is synchronized
+ *   with a smart TTL and re-verification logic to honor manual deletions without
+ *   exceeding Google API quotas.
  */
 
 // In-memory set of normalized phone numbers that have completed the quiz
@@ -25,30 +27,54 @@ const completedPhonesSet = new Set<string>();
 // Atomic in-flight lock to prevent simultaneous concurrent requests
 const inFlightPhoneLocks = new Map<string, number>();
 
-// Track whether initial sheet sync has executed
-let hasSyncedWithSheets = false;
+// Cache timestamp and background sync lock
+let lastSyncTimestamp = 0;
 let syncPromise: Promise<void> | null = null;
+
+// Cache TTL: Background cache is considered valid for up to 10 seconds.
+// Force refresh cooldown: At least 3 seconds between forced live Google Sheets queries
+// to protect Google API quotas while ensuring manual deletions are quickly honored.
+const CACHE_TTL_MS = 10000;
+const FORCE_REFRESH_COOLDOWN_MS = 3000;
 
 /**
  * Synchronize completed phone numbers from Google Sheets into the in-memory cache.
+ * If force is true, bypasses CACHE_TTL_MS (subject to FORCE_REFRESH_COOLDOWN_MS).
+ * 
+ * Replaces the cache with the live state of Google Sheets so any rows manually deleted
+ * by booth staff are immediately unblocked.
  */
-export async function syncCompletedPhonesFromSheets(): Promise<void> {
-  if (hasSyncedWithSheets) return;
+export async function syncCompletedPhonesFromSheets(force: boolean = false): Promise<void> {
+  const now = Date.now();
+  if (!force && lastSyncTimestamp > 0 && now - lastSyncTimestamp < CACHE_TTL_MS) {
+    return;
+  }
+  if (force && lastSyncTimestamp > 0 && now - lastSyncTimestamp < FORCE_REFRESH_COOLDOWN_MS) {
+    return;
+  }
   if (syncPromise) return syncPromise;
 
   syncPromise = (async () => {
     try {
       const rawPhones = await fetchExistingCompletedPhonesFromSheet();
+      const freshPhones = new Set<string>();
       for (const raw of rawPhones) {
         const { isValid, normalized } = normalizePhoneNumber(raw);
         if (isValid && normalized) {
-          completedPhonesSet.add(normalized);
+          freshPhones.add(normalized);
         }
       }
-      hasSyncedWithSheets = true;
+
+      // Atomically replace completedPhonesSet with the fresh sheet snapshot
+      completedPhonesSet.clear();
+      for (const phone of freshPhones) {
+        completedPhonesSet.add(phone);
+      }
+
+      lastSyncTimestamp = Date.now();
       console.log(`[PhoneRegistry] Synchronized ${completedPhonesSet.size} unique completed phone numbers from Google Sheets.`);
     } catch (err: any) {
-      console.warn('[PhoneRegistry] Warning: Could not complete initial sheet phone sync:', err.message);
+      console.warn('[PhoneRegistry] Warning: Could not complete sheet phone sync:', err.message);
     } finally {
       syncPromise = null;
     }
@@ -60,6 +86,8 @@ export async function syncCompletedPhonesFromSheets(): Promise<void> {
 /**
  * Checks whether a mobile number has already completed a quiz submission.
  * Validates and normalizes the number, checks in-memory cache, and verifies against Google Sheets.
+ * If a number was previously completed but manually removed from Google Sheets, this will
+ * re-verify against Google Sheets and allow the participant to re-attempt the quiz.
  */
 export async function isPhoneAlreadyCompleted(
   rawPhone: string,
@@ -80,18 +108,18 @@ export async function isPhoneAlreadyCompleted(
     };
   }
 
-  // Fast-path: Check in-memory cache
-  if (completedPhonesSet.has(val.normalized)) {
-    return {
-      completed: true,
-      normalized: val.normalized,
-      isValid: true
-    };
+  // 1. Initial sync if never synced yet
+  if (lastSyncTimestamp === 0) {
+    await syncCompletedPhonesFromSheets(false);
   }
 
-  // Sync with Google Sheets if not yet performed
-  if (!hasSyncedWithSheets) {
-    await syncCompletedPhonesFromSheets();
+  // 2. If the number is currently in the cache, re-verify with Google Sheets if cooldown has passed.
+  // This guarantees that if a row was manually deleted from Google Sheets, the deletion is honored!
+  if (completedPhonesSet.has(val.normalized)) {
+    if (Date.now() - lastSyncTimestamp > FORCE_REFRESH_COOLDOWN_MS) {
+      await syncCompletedPhonesFromSheets(true);
+    }
+
     if (completedPhonesSet.has(val.normalized)) {
       return {
         completed: true,
@@ -145,7 +173,7 @@ export function acquirePhoneSubmissionLock(normalizedPhone: string): {
 
 /**
  * Releases the in-flight lock for a normalized phone number.
- * If markCompleted is true, permanently adds the phone number to completedPhonesSet.
+ * If markCompleted is true, adds the phone number to completedPhonesSet.
  */
 export function releasePhoneSubmissionLock(normalizedPhone: string, markCompleted: boolean): void {
   inFlightPhoneLocks.delete(normalizedPhone);
@@ -162,10 +190,18 @@ export function markPhoneAsCompleted(normalizedPhone: string): void {
 }
 
 /**
+ * Manually remove a phone number from the completed set.
+ */
+export function removePhoneFromRegistry(normalizedPhone: string): void {
+  completedPhonesSet.delete(normalizedPhone);
+}
+
+/**
  * Clear test data (strictly for testing).
  */
 export function __resetPhoneRegistryForTesting(): void {
   completedPhonesSet.clear();
   inFlightPhoneLocks.clear();
-  hasSyncedWithSheets = false;
+  lastSyncTimestamp = 0;
+  syncPromise = null;
 }
